@@ -25,7 +25,7 @@ const FlexRow = styled.div`
 `;
 
 const Column = styled.div`
-  padding: 8px;
+  padding: 0px;
 `;
 
 const StyledTab = styled(Tab)`
@@ -85,7 +85,7 @@ export function MainScreen() {
           <Column>
             <TableList createTable={() => setCurrentTab('create-table')} />
           </Column>
-          <Column style={{ flex: 1, paddingLeft: 8, paddingBottom: 50 }}>
+          <Column style={{ flex: 1, paddingLeft: 16, paddingBottom: 50 }}>
             <Tabs
               value={currentTab}
               onChange={(e, value) => setCurrentTab(value)}

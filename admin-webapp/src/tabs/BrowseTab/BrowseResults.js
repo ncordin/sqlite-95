@@ -39,7 +39,7 @@ export function BrowseResults({
   return (
     <div
       style={{
-        width: 'calc(100vw - 330px)',
+        width: 'calc(100vw - 356px)',
         overflowX: 'auto',
       }}
     >
@@ -89,7 +89,12 @@ export function BrowseResults({
                 {values.map((value, valuesIndex) => (
                   <TableDataCell
                     key={`${index}-${valuesIndex}`}
-                    style={{ whiteSpace: 'nowrap' }}
+                    style={{
+                      whiteSpace: 'nowrap',
+                      maxWidth: 200,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    }}
                   >
                     {value === null ? <Null /> : value}
                   </TableDataCell>

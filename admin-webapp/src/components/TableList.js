@@ -14,7 +14,7 @@ export function TableList({ createTable }) {
       <Button fullWidth style={{ marginBottom: 16 }} onClick={refresh}>
         Refresh tables
       </Button>
-      <Fieldset label={`Tables (${tables.length})`} style={{ width: 200 }}>
+      <Fieldset label={`Tables (${tables.length})`} style={{ width: 230 }}>
         {tables.map((table) => {
           return (
             <ListItem
