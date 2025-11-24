@@ -14,6 +14,7 @@ import { SqlTab } from '../tabs/SqlTab';
 import { StructureTab } from '../tabs/StructureTab';
 import { useDatabase } from '../contexts/Database';
 import { useUrlParam } from '../utils/useUrlParam';
+import { SearchTab } from '../tabs/SearchTab';
 
 const Container = styled.div`
   padding: 1rem;
@@ -57,6 +58,9 @@ export function MainScreen() {
       case 'insert':
         return <InsertTab onCreated={() => setCurrentTab('browse')} />;
 
+      case 'search':
+        return <SearchTab />;
+
       case 'sql':
         return <SqlTab />;
 
@@ -92,6 +96,7 @@ export function MainScreen() {
             >
               <StyledTab value="browse">Browse</StyledTab>
               <StyledTab value="insert">Insert</StyledTab>
+              <StyledTab value="search">Search</StyledTab>
               <StyledTab value="sql">SQL</StyledTab>
               <StyledTab value="structure">Structure</StyledTab>
               <StyledTab value="management">Management</StyledTab>

@@ -19,14 +19,6 @@ function makeAssignment(field, value) {
   return `${escapeFieldName(field)} = ${escapeValue(value)}`;
 }
 
-function makeEquality(field, value) {
-  if (value === null) {
-    return `${escapeFieldName(field)} IS NULL`;
-  }
-
-  return `${escapeFieldName(field)} = ${escapeValue(value)}`;
-}
-
 export function makeSet(row) {
   return Object.keys(row)
     .filter((key) => key !== 'rowid')

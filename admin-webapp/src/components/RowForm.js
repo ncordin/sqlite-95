@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox, NumberField, TextField } from 'react95';
+import { Checkbox, TextField } from 'react95';
 import styled from 'styled-components';
 
 import { useTables } from '../contexts/Tables';
