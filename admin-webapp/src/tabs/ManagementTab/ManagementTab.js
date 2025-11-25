@@ -52,47 +52,36 @@ export function ManagementTab() {
       <form onSubmit={renameTable}>
         <Fieldset
           label="Rename table"
-          style={{ marginBottom: 32, padding: '2rem' }}
+          style={{ marginBottom: 24, display: 'flex', gap: 8 }}
         >
           <TextField
             value={newTableName}
             onChange={(event) => setNewTableName(event.target.value)}
+            style={{ width: 200 }}
           />
-          <Button type="submit" style={{ marginTop: '1rem' }}>
-            Rename
-          </Button>
+
+          <Button type="submit">Rename</Button>
         </Fieldset>
       </form>
 
-      <Fieldset
-        label="Export database"
-        style={{ marginBottom: 32, padding: '2rem' }}
-      >
-        <Button onClick={onDownload} style={{ marginTop: '1rem' }}>
-          Download a copy
-        </Button>
+      <Fieldset label="Export database" style={{ marginBottom: 24 }}>
+        <Button onClick={onDownload}>Download a copy</Button>
       </Fieldset>
 
-      <Fieldset
-        label="Danger zone"
-        style={{ marginBottom: '2rem', padding: '2rem' }}
-      >
+      <Fieldset label="Danger zone" style={{ marginBottom: '2rem' }}>
         <p style={{ marginBottom: '1rem' }}>
           <span style={{ fontWeight: 'bold' }}> {currentTable.name}</span> data
           will be lost!
         </p>
-        <Button style={{ marginRight: 16 }} onClick={flushTable}>
+        <Button style={{ marginRight: 8 }} onClick={flushTable}>
           Empty table
         </Button>
-        <Button style={{ marginRight: 16 }} onClick={dropTable}>
+        <Button style={{ marginRight: 8 }} onClick={dropTable}>
           Delete table
         </Button>
       </Fieldset>
 
-      <Fieldset
-        label="SQL Describe"
-        style={{ marginBottom: '2rem', padding: '2rem' }}
-      >
+      <Fieldset label="SQL Describe">
         <InnerPanel>{currentTable.describe}</InnerPanel>
       </Fieldset>
     </>

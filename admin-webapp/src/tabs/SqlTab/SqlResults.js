@@ -15,7 +15,7 @@ export function SqlResults({ data }) {
   return (
     <Table>
       <TableHead>
-        <TableRow head>
+        <TableRow>
           {headers.map((header) => (
             <TableHeadCell key={header} disabled>
               {header}

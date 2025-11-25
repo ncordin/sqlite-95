@@ -39,13 +39,13 @@ export function BrowseResults({
   return (
     <div
       style={{
-        width: 'calc(100vw - 356px)',
+        width: 'calc(100vw - 345px)',
         overflowX: 'auto',
       }}
     >
       <Table>
         <TableHead>
-          <TableRow head>
+          <TableRow>
             <TableHeadCell></TableHeadCell>
             <TableHeadCell></TableHeadCell>
             {headers

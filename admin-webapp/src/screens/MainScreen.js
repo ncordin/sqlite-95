@@ -30,7 +30,7 @@ const Column = styled.div`
 `;
 
 const StyledTab = styled(Tab)`
-  padding: 0 1.2rem;
+  padding: 0 1rem;
 `;
 
 export function MainScreen() {
@@ -92,7 +92,9 @@ export function MainScreen() {
           <Column style={{ flex: 1, paddingLeft: 16, paddingBottom: 50 }}>
             <Tabs
               value={currentTab}
-              onChange={(e, value) => setCurrentTab(value)}
+              onChange={(value) => {
+                return setCurrentTab(value);
+              }}
             >
               <StyledTab value="browse">Browse</StyledTab>
               <StyledTab value="insert">Insert</StyledTab>

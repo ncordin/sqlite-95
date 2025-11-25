@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Fieldset } from 'react95';
+import { Button, Fieldset, GroupBox } from 'react95';
 
 import { useTables } from '../../contexts/Tables';
 import { SearchForm } from './SearchForm';
@@ -9,13 +9,13 @@ import { escapeFieldName, escapeValue } from '../../utils/query';
 import { BrowseResults } from '../BrowseTab/BrowseResults';
 import { useUrlParam } from '../../utils/useUrlParam';
 import { Edit } from '../BrowseTab/Edit';
+import { Space } from '../../components/Space';
 
 export function SearchTab() {
   const [rowid, setRowid] = useUrlParam('rowid');
   const { currentTable } = useTables();
   const { executeQuery } = useApi();
   const [searchCriteria, setSearchCriteria] = useState({});
-  const [showQuery, setShowQuery] = useState(false);
   const [results, setResults] = useState([]);
   const [orderBy, setOrderBy] = useState(null);
   const [orderByDirection, setOrderByDirection] = useState(true);
@@ -86,19 +86,19 @@ export function SearchTab() {
   return (
     <>
       <form onSubmit={onSubmit}>
-        <Fieldset label={`Search into ${currentTable.name}`}>
+        <GroupBox label={`Search into ${currentTable.name}`}>
           <SearchForm criteria={searchCriteria} onChange={setSearchCriteria} />
-        </Fieldset>
+        </GroupBox>
 
-        <div style={{ margin: '1rem 0' }}>
-          <Button type="submit" style={{ marginRight: '0.5rem' }}>
-            Search
-          </Button>
+        <Space vertical />
 
-          <Button onClick={() => setShowQuery(!showQuery)}>Show query</Button>
-        </div>
+        <Button type="submit" style={{ marginRight: '0.5rem' }}>
+          Search
+        </Button>
 
-        {showQuery && <InnerPanel>{query}</InnerPanel>}
+        <Space vertical />
+
+        <InnerPanel>{query}</InnerPanel>
       </form>
 
       {results.length > 0 && (

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Button, Fieldset } from 'react95';
+import { Button, GroupBox } from 'react95';
 
 import { useTables } from '../../contexts/Tables';
 import { RowForm } from '../../components/RowForm';
 import { useApi } from '../../utils/useApi';
 import { InnerPanel } from '../../components/InnerPanel';
 import { escapeFieldName, escapeValue } from '../../utils/query';
+import { Space } from '../../components/Space';
 
 export function InsertTab({ onCreated }) {
   const { currentTable, refresh } = useTables();
@@ -34,17 +35,19 @@ export function InsertTab({ onCreated }) {
 
   return (
     <form onSubmit={onSubmit}>
-      <Fieldset label={`Insert into ${currentTable.name}`}>
+      <GroupBox label={`Insert into ${currentTable.name}`}>
         <RowForm row={editingRow} onChange={setEditingRow} />
-      </Fieldset>
+      </GroupBox>
 
-      <div style={{ margin: '1rem 0' }}>
-        <Button type="submit" style={{ marginRight: '0.5rem' }}>
-          Insert
-        </Button>
+      <Space size={1} vertical />
 
-        <Button onClick={() => setShowQuery(!showQuery)}>Show query</Button>
-      </div>
+      <Button type="submit" style={{ marginRight: '0.5rem' }}>
+        Insert
+      </Button>
+
+      <Button onClick={() => setShowQuery(!showQuery)}>Show query</Button>
+
+      <Space vertical />
 
       {showQuery && <InnerPanel>{query}</InnerPanel>}
     </form>

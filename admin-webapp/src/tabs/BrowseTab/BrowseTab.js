@@ -9,6 +9,7 @@ import { Edit } from './Edit';
 import { makeDelete } from '../../utils/query';
 import { useApi } from '../../utils/useApi';
 import { useUrlParam } from '../../utils/useUrlParam';
+import { Space } from '../../components/Space';
 
 const FlexRow = styled.div`
   display: flex;
@@ -18,7 +19,7 @@ const FlexRow = styled.div`
 `;
 
 const FlexColumn = styled.div`
-  margin-right: 1rem;
+  margin-right: 8px;
   display: flex;
 `;
 
@@ -87,6 +88,8 @@ export function BrowseTab() {
     <>
       <InnerPanel>{value}</InnerPanel>
 
+      <Space vertical />
+
       <FlexRow>
         <FlexColumn>
           <Button onClick={() => execute(value)}>Refresh</Button>
@@ -103,6 +106,7 @@ export function BrowseTab() {
           {response ? `${response.length} results` : 'Loading...'}
         </InnerPanel>
       </FlexRow>
+
       {response && (
         <BrowseResults
           data={response}

@@ -32,7 +32,7 @@ const StyledTable = styled.table`
   margin: 1rem 0;
 
   td {
-    padding: 0.5rem 0.5rem;
+    padding: 0rem 0.5rem;
     vertical-align: middle;
   }
 `;
@@ -51,12 +51,7 @@ function renderInput({ field, value, setValue, disabled }) {
   }
 
   return (
-    <TextField
-      value={value || ''}
-      onChange={onChange}
-      style={{ width: 300 }}
-      disabled={disabled}
-    />
+    <TextField value={value || ''} onChange={onChange} disabled={disabled} />
   );
 }
 
@@ -98,7 +93,7 @@ export function SearchForm({ criteria, onChange }) {
                   value={fieldCriteria.operator}
                   options={OPERATORS}
                   onChange={(e) => {
-                    const selectedOperator = e.target.value;
+                    const selectedOperator = e.value;
                     updateCriteria(field.name, {
                       operator: selectedOperator,
                       value:

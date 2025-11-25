@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, Fieldset, Select, TextField } from 'react95';
+import { Button, Checkbox, GroupBox, Select, TextField } from 'react95';
 
 import { InnerPanel } from '../../components/InnerPanel';
 import { defaultField, NewFieldsForm } from '../../components/NewFieldsForm';
 import { useTables } from '../../contexts/Tables';
 import { makeCreateTable } from '../../utils/query';
 import { useApi } from '../../utils/useApi';
+import { Space } from '../../components/Space';
 
 export function CreateTableTab({ onCreated }) {
   const [tableName, setTableName] = useState('');
@@ -32,26 +33,26 @@ export function CreateTableTab({ onCreated }) {
 
   return (
     <form onSubmit={onSubmit}>
-      <Fieldset label="Table name" style={{ marginBottom: 32 }}>
+      <GroupBox label="Table name" style={{ marginBottom: 24 }}>
         <TextField
           value={tableName}
           onChange={(event) => setTableName(event.target.value)}
         />
-      </Fieldset>
+      </GroupBox>
 
-      <Fieldset label="Table fields" style={{ marginBottom: 32 }}>
+      <GroupBox label="Table fields" style={{ marginBottom: 24 }}>
         <NewFieldsForm fields={fields} setFields={setFields} />
-        <Button
-          style={{ marginLeft: '0.5rem' }}
-          onClick={() => setFields([...fields, defaultField])}
-        >
+
+        <Space vertical />
+
+        <Button onClick={() => setFields([...fields, defaultField])}>
           Add one more field
         </Button>
-      </Fieldset>
+      </GroupBox>
 
-      <Fieldset
+      <GroupBox
         label="Primary key"
-        style={{ marginBottom: 32, display: 'flex' }}
+        style={{ marginBottom: 24, display: 'flex' }}
       >
         <Select
           style={{ marginRight: 16 }}
@@ -84,17 +85,13 @@ export function CreateTableTab({ onCreated }) {
             );
           }}
         />
-      </Fieldset>
+      </GroupBox>
 
-      <p style={{ marginBottom: 16 }}>
-        <Button
-          type="submit"
-          disabled={!tableName}
-          style={{ marginRight: '0.5rem' }}
-        >
-          Create table
-        </Button>
-      </p>
+      <Button type="submit" disabled={!tableName}>
+        Create table
+      </Button>
+
+      <Space vertical />
 
       <InnerPanel>{makeCreateTable(tableName, fields)}</InnerPanel>
     </form>

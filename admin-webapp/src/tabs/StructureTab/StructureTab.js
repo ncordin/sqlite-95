@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Anchor, Button, Fieldset, TextField } from 'react95';
+import { Anchor, Button, GroupBox, TextField } from 'react95';
 import styled from 'styled-components';
 import { FlexRow } from '../../components/FlexRow';
 import { defaultField, NewFieldsForm } from '../../components/NewFieldsForm';
@@ -16,11 +16,11 @@ import { CreateIndex } from './CreateIndex';
 import { ListIndex } from './ListIndex';
 
 const StyledTable = styled.table`
-  margin: 1rem 0;
+  margin: 0;
   width: 100%;
 
   td {
-    padding: 0.5rem 0.5rem;
+    padding: 4px 0.5rem;
     vertical-align: middle;
   }
 `;
@@ -100,20 +100,8 @@ export function StructureTab() {
 
   return (
     <div>
-      <Fieldset label="Fields">
+      <GroupBox label="Fields">
         <StyledTable style={{ width: '100%' }}>
-          <thead style={{ fontWeight: 'bold' }}>
-            <tr>
-              <td>Name</td>
-              <td>Type</td>
-              <td>Default value</td>
-            </tr>
-            <tr>
-              <td></td>
-              <td></td>
-              <td></td>
-            </tr>
-          </thead>
           <tbody>
             {currentTable.structure.map((field) => {
               return (
@@ -151,14 +139,15 @@ export function StructureTab() {
             <Button onClick={() => setRenamingField(null)}>Cancel</Button>
           </FlexRow>
         )}
-      </Fieldset>
+      </GroupBox>
 
       <Space size={2} vertical />
 
-      <Fieldset label="Add field">
+      <GroupBox label="Add field">
         <NewFieldsForm fields={fields} setFields={setFields} />
+        <Space vertical />
         <Button onClick={addField}>Add field</Button>
-      </Fieldset>
+      </GroupBox>
 
       <Space size={2} vertical />
 

@@ -20,7 +20,7 @@ const StyledTable = styled.table`
   margin: 1rem 0;
 
   td {
-    padding: 0.5rem 0.5rem;
+    padding: 0 0.5rem;
     vertical-align: middle;
   }
 `;

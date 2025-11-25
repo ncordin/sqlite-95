@@ -18,11 +18,11 @@ export const defaultField = {
 };
 
 const StyledTable = styled.table`
-  margin: 1rem 0;
+  margin: 0;
 
   td {
-    padding: 0.5rem;
     vertical-align: middle;
+    padding: 0 4px;
   }
 `;
 

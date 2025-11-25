@@ -5,9 +5,11 @@ import { FlexRow } from '../../components/FlexRow';
 import { useTables } from '../../contexts/Tables';
 import { makeIndex } from '../../utils/query';
 import { useApi } from '../../utils/useApi';
+import { Space } from '../../components/Space';
 
 const Description = styled.div`
   flex-basis: 8rem;
+  min-width: 150px;
 `;
 
 export function CreateIndex({ refreshIndexes }) {
@@ -76,11 +78,12 @@ export function CreateIndex({ refreshIndexes }) {
           <Description>Name</Description>
           <TextField style={{ width: 300 }} value={name} disabled />
         </FlexRow>
-        <FlexRow>
-          <Button type="submit" disabled={fields.length === 0}>
-            Create index
-          </Button>
-        </FlexRow>
+
+        <Space vertical />
+
+        <Button type="submit" disabled={fields.length === 0}>
+          Create index
+        </Button>
       </form>
     </Fieldset>
   );
