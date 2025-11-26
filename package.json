@@ -1,7 +1,7 @@
 {
   "name": "sqlite-95",
   "description": "SQLite ORM with a web admin",
-  "version": "5.6.0",
+  "version": "5.7.0",
   "homepage": "https://github.com/ncordin/sqlite-95",
   "repository": {
     "type": "git",
