@@ -57,7 +57,7 @@ export function StructureTab() {
   const [renamingField, setRenamingField] = useState(null);
   const [renameFieldName, setRenameFieldName] = useState('');
 
-  const [addField, setAddField] = useState(defaultField);
+  const [addFields, setAddFields] = useState([defaultField]);
 
   const [indexes, setIndexes] = useState([]);
 
@@ -93,13 +93,13 @@ export function StructureTab() {
   };
 
   const addFieldQuery = makeAddField({
-    field: addField,
+    field: addFields[0],
     tableName: currentTable.name,
   });
 
   const doAddField = async () => {
     const query = makeAddField({
-      field: addField,
+      field: addFields[0],
       tableName: currentTable.name,
     });
 
@@ -154,7 +154,7 @@ export function StructureTab() {
       <Space size={2} vertical />
 
       <GroupBox label="Add field">
-        <NewFieldsForm field={addField} setField={setAddField} />
+        <NewFieldsForm fields={addFields} setFields={setAddFields} />
         <Space vertical size={0.5} />
         <Button onClick={doAddField}>Add field</Button>
         <Space vertical size={0.5} />

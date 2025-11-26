@@ -1,10 +1,17 @@
 import React from 'react';
-import { Checkbox, TextField } from 'react95';
+import { Checkbox, NumberInput, TextInput } from 'react95';
 import styled from 'styled-components';
 
 import { useTables } from '../contexts/Tables';
 
-const NUMERICS = ['int', 'integer', 'tinyint', 'smallint', 'mediumint'];
+const NUMERICS = [
+  'int',
+  'integer',
+  'tinyint',
+  'smallint',
+  'mediumint',
+  'boolean',
+];
 
 const isNumericalType = (type) => {
   const [split] = type.toLowerCase().split('(');
@@ -12,38 +19,43 @@ const isNumericalType = (type) => {
   return NUMERICS.includes(split);
 };
 
-function isNumericalValue(value) {
-  return /^-?\d+$/.test(value);
-}
-
 const StyledTable = styled.table`
   margin: 1rem 0;
 
   td {
-    padding: 0 0.5rem;
+    padding: 2px 8px;
     vertical-align: middle;
   }
 `;
 
-function renderInput({ field, value, setValue }) {
-  let onChange = (event) => setValue(event.target.value);
-
+function renderInput({ field, value, disabled, setValue }) {
   if (isNumericalType(field.type)) {
-    onChange = (event) => {
-      const value = event.target.value;
+    const safeValue =
+      value === undefined || value === null || value === '' || isNaN(value)
+        ? undefined
+        : parseFloat(value);
 
-      if (isNumericalValue(value)) {
-        return setValue(value);
-      }
-    };
+    return (
+      <NumberInput
+        defaultValue={safeValue}
+        step={1}
+        onChange={setValue}
+        width={220}
+        disabled={disabled}
+      />
+    );
   }
 
+  const onChange = (event) => {
+    return setValue(event.target.value);
+  };
+
   return (
-    <TextField
+    <TextInput
       value={value || ''}
       onChange={onChange}
-      style={{ width: 300 }}
-      disabled={value === null}
+      style={{ width: 220 }}
+      disabled={disabled}
     />
   );
 }
@@ -67,22 +79,21 @@ export function RowForm({ row, onChange }) {
     <StyledTable style={{ width: '100%' }}>
       <tbody>
         {currentTable.structure.map((field) => {
-          const initialValue = row[field.name];
-          const hasDefaultValue =
-            field.defaultValue !== null || field.canBeNull;
-          const value =
-            initialValue === undefined && hasDefaultValue
-              ? field.defaultValue
-              : initialValue;
+          const value = row[field.name];
+          const warning =
+            value === undefined && !field.canBeNull && !field.defaultValue;
 
           return (
             <tr key={field.name}>
               <td style={{ fontWeight: 'bold' }}>{field.name}</td>
-              <td>{field.type.toUpperCase()}</td>
+              <td>
+                {field.type.toUpperCase()} {warning && '⚠️'}
+              </td>
               <td>
                 {renderInput({
                   field,
-                  value,
+                  value: value === undefined ? field.defaultValue : value,
+                  disabled: value === null,
                   setValue: makeUpdateField(field.name),
                 })}
               </td>
@@ -91,11 +102,11 @@ export function RowForm({ row, onChange }) {
                   label="NULL"
                   disabled={!field.canBeNull}
                   checked={value === null}
-                  onChange={(event) =>
-                    makeUpdateField(field.name)(
+                  onChange={(event) => {
+                    return makeUpdateField(field.name)(
                       event.target.checked ? null : ''
-                    )
-                  }
+                    );
+                  }}
                 />
               </td>
             </tr>

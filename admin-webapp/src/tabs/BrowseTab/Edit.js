@@ -12,7 +12,6 @@ export function Edit() {
   const { currentTable } = useTables();
   const [rowid, setRowid] = useUrlParam('rowid');
   const [editingRow, setEditingRow] = useState({});
-  const [showQuery, setShowQuery] = useState(false);
   const { executeQuery } = useApi();
 
   useEffect(() => {
@@ -54,13 +53,10 @@ export function Edit() {
         <Button type="submit" style={{ marginRight: '0.5rem' }}>
           Update
         </Button>
-        <Button onClick={cancel} style={{ marginRight: '0.5rem' }}>
-          Cancel
-        </Button>
-        <Button onClick={() => setShowQuery(!showQuery)}>Show query</Button>
+        <Button onClick={cancel}>Cancel</Button>
       </div>
 
-      {showQuery && <InnerPanel>{query}</InnerPanel>}
+      <InnerPanel>{query}</InnerPanel>
     </form>
   );
 }

@@ -12,7 +12,6 @@ export function InsertTab({ onCreated }) {
   const { currentTable, refresh } = useTables();
   const { executeQuery } = useApi();
   const [editingRow, setEditingRow] = useState({});
-  const [showQuery, setShowQuery] = useState(false);
 
   const fields = Object.keys(editingRow)
     .map((name) => escapeFieldName(name))
@@ -41,15 +40,11 @@ export function InsertTab({ onCreated }) {
 
       <Space size={1} vertical />
 
-      <Button type="submit" style={{ marginRight: '0.5rem' }}>
-        Insert
-      </Button>
-
-      <Button onClick={() => setShowQuery(!showQuery)}>Show query</Button>
+      <Button type="submit">Insert</Button>
 
       <Space vertical />
 
-      {showQuery && <InnerPanel>{query}</InnerPanel>}
+      <InnerPanel>{query}</InnerPanel>
     </form>
   );
 }
