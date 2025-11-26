@@ -4,7 +4,7 @@ import { useTables } from '../../contexts/Tables';
 import { RowForm } from '../../components/RowForm';
 import { InnerPanel } from '../../components/InnerPanel';
 import { makeSet } from '../../utils/query';
-import { Button, Fieldset } from 'react95';
+import { Button, GroupBox } from 'react95';
 import { useApi } from '../../utils/useApi';
 import { useUrlParam } from '../../utils/useUrlParam';
 
@@ -46,9 +46,9 @@ export function Edit() {
 
   return (
     <form onSubmit={onSubmit}>
-      <Fieldset label={`Editing ${currentTable.name}`}>
+      <GroupBox label={`Editing ${currentTable.name}`}>
         <RowForm row={editingRow} onChange={setEditingRow} />
-      </Fieldset>
+      </GroupBox>
 
       <div style={{ margin: '1rem 0' }}>
         <Button type="submit" style={{ marginRight: '0.5rem' }}>

@@ -1,19 +1,19 @@
 import React from 'react';
-import { Button, Fieldset } from 'react95';
+import { Button, GroupBox } from 'react95';
 import { FlexRow } from '../../components/FlexRow';
 import { useApi } from '../../utils/useApi';
 
 export function ListIndex({ indexes, refreshIndexes, currentTable }) {
   const { executeQuery } = useApi();
-  const primaryKey = currentTable.structure
-    .filter((field) => field.isPrimaryKey)
-    .map((field) => field.name);
+  const primaryKey = currentTable.structure.filter(
+    (field) => field.isPrimaryKey
+  )[0];
 
   return (
-    <Fieldset label="Indexes">
+    <GroupBox label="Indexes">
       {primaryKey && (
         <FlexRow between>
-          <span>{primaryKey}</span>
+          <span>{primaryKey.name}</span>
           <span>primary key</span>
         </FlexRow>
       )}
@@ -31,7 +31,7 @@ export function ListIndex({ indexes, refreshIndexes, currentTable }) {
           </FlexRow>
         );
       })}
-    </Fieldset>
+    </GroupBox>
   );
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Fieldset, TextField } from 'react95';
+import { Button, GroupBox, TextField } from 'react95';
 
 import { useTables } from '../../contexts/Tables';
 import { InnerPanel } from '../../components/InnerPanel';
@@ -50,7 +50,7 @@ export function ManagementTab() {
   return (
     <>
       <form onSubmit={renameTable}>
-        <Fieldset
+        <GroupBox
           label="Rename table"
           style={{ marginBottom: 24, display: 'flex', gap: 8 }}
         >
@@ -61,14 +61,14 @@ export function ManagementTab() {
           />
 
           <Button type="submit">Rename</Button>
-        </Fieldset>
+        </GroupBox>
       </form>
 
-      <Fieldset label="Export database" style={{ marginBottom: 24 }}>
+      <GroupBox label="Export database" style={{ marginBottom: 24 }}>
         <Button onClick={onDownload}>Download a copy</Button>
-      </Fieldset>
+      </GroupBox>
 
-      <Fieldset label="Danger zone" style={{ marginBottom: '2rem' }}>
+      <GroupBox label="Danger zone" style={{ marginBottom: '2rem' }}>
         <p style={{ marginBottom: '1rem' }}>
           <span style={{ fontWeight: 'bold' }}> {currentTable.name}</span> data
           will be lost!
@@ -79,11 +79,11 @@ export function ManagementTab() {
         <Button style={{ marginRight: 8 }} onClick={dropTable}>
           Delete table
         </Button>
-      </Fieldset>
+      </GroupBox>
 
-      <Fieldset label="SQL Describe">
+      <GroupBox label="SQL Describe">
         <InnerPanel>{currentTable.describe}</InnerPanel>
-      </Fieldset>
+      </GroupBox>
     </>
   );
 }

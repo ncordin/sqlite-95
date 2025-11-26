@@ -66,7 +66,7 @@ export function CreateTableTab({ onCreated }) {
             setFields(
               fields.map((field) => ({
                 ...field,
-                primaryKey: event.target.value === field.name,
+                primaryKey: event.value === field.name,
               }))
             );
           }}

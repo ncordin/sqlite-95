@@ -14,6 +14,7 @@ import {
 import { useApi } from '../../utils/useApi';
 import { CreateIndex } from './CreateIndex';
 import { ListIndex } from './ListIndex';
+import { InnerPanel } from '../../components/InnerPanel';
 
 const StyledTable = styled.table`
   margin: 0;
@@ -50,12 +51,15 @@ function getDefaultValue(field) {
 }
 
 export function StructureTab() {
-  const { currentTable, refresh } = useTables();
-  const [fields, setFields] = useState([defaultField]);
-  const [indexes, setIndexes] = useState([]);
-  const [renamingField, setRenamingField] = useState(null);
-  const [newFieldName, setNewFieldName] = useState('');
   const { executeQuery } = useApi();
+  const { currentTable, refresh } = useTables();
+
+  const [renamingField, setRenamingField] = useState(null);
+  const [renameFieldName, setRenameFieldName] = useState('');
+
+  const [addField, setAddField] = useState(defaultField);
+
+  const [indexes, setIndexes] = useState([]);
 
   const refreshIndexes = () => {
     executeQuery(`PRAGMA index_list("${currentTable.name}");`).then(setIndexes);
@@ -68,7 +72,7 @@ export function StructureTab() {
   const rename = async () => {
     const query = makeRenameField({
       currentName: renamingField,
-      newName: newFieldName,
+      newName: renameFieldName,
       tableName: currentTable.name,
     });
 
@@ -88,9 +92,14 @@ export function StructureTab() {
     await refresh();
   };
 
-  const addField = async () => {
+  const addFieldQuery = makeAddField({
+    field: addField,
+    tableName: currentTable.name,
+  });
+
+  const doAddField = async () => {
     const query = makeAddField({
-      field: fields[0],
+      field: addField,
       tableName: currentTable.name,
     });
 
@@ -113,7 +122,7 @@ export function StructureTab() {
                     <Link
                       onClick={() => {
                         setRenamingField(field.name);
-                        setNewFieldName('');
+                        setRenameFieldName('');
                       }}
                     >
                       rename
@@ -128,14 +137,15 @@ export function StructureTab() {
         </StyledTable>
         {renamingField && (
           <FlexRow>
+            <Space vertical size={4} />
             <TextField
-              value={newFieldName}
+              value={renameFieldName}
               placeholder={renamingField}
-              onChange={(event) => setNewFieldName(event.target.value)}
+              onChange={(event) => setRenameFieldName(event.target.value)}
             />
-            <Space vertical />
+            <Space />
             <Button onClick={rename}>Rename</Button>
-            <Space vertical />
+            <Space />
             <Button onClick={() => setRenamingField(null)}>Cancel</Button>
           </FlexRow>
         )}
@@ -144,9 +154,11 @@ export function StructureTab() {
       <Space size={2} vertical />
 
       <GroupBox label="Add field">
-        <NewFieldsForm fields={fields} setFields={setFields} />
-        <Space vertical />
-        <Button onClick={addField}>Add field</Button>
+        <NewFieldsForm field={addField} setField={setAddField} />
+        <Space vertical size={0.5} />
+        <Button onClick={doAddField}>Add field</Button>
+        <Space vertical size={0.5} />
+        <InnerPanel>{addFieldQuery}</InnerPanel>
       </GroupBox>
 
       <Space size={2} vertical />

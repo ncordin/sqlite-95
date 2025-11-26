@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, Fieldset, TextField } from 'react95';
+import { Button, Checkbox, GroupBox, TextField } from 'react95';
 import styled from 'styled-components';
 import { FlexRow } from '../../components/FlexRow';
 import { useTables } from '../../contexts/Tables';
@@ -50,7 +50,7 @@ export function CreateIndex({ refreshIndexes }) {
   };
 
   return (
-    <Fieldset label="Create index">
+    <GroupBox label="Create index">
       <form onSubmit={submit}>
         <FlexRow>
           <Description>Fields</Description>
@@ -85,6 +85,6 @@ export function CreateIndex({ refreshIndexes }) {
           Create index
         </Button>
       </form>
-    </Fieldset>
+    </GroupBox>
   );
 }

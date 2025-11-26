@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Fieldset, GroupBox } from 'react95';
+import { Button, GroupBox } from 'react95';
 
 import { useTables } from '../../contexts/Tables';
 import { SearchForm } from './SearchForm';
@@ -85,24 +85,24 @@ export function SearchTab() {
 
   return (
     <>
-      <form onSubmit={onSubmit}>
+      <form onSubmit={onSubmit} style={{ padding: 0, margin: 0 }}>
         <GroupBox label={`Search into ${currentTable.name}`}>
           <SearchForm criteria={searchCriteria} onChange={setSearchCriteria} />
         </GroupBox>
 
-        <Space vertical />
+        <Space vertical size={0.5} />
 
         <Button type="submit" style={{ marginRight: '0.5rem' }}>
           Search
         </Button>
 
-        <Space vertical />
+        <Space vertical size={0.5} />
 
         <InnerPanel>{query}</InnerPanel>
       </form>
 
       {results.length > 0 && (
-        <div style={{ marginTop: '2rem' }}>
+        <div style={{ marginTop: '1rem' }}>
           <BrowseResults
             data={results}
             orderBy={orderBy}
