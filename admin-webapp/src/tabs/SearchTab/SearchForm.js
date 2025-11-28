@@ -29,10 +29,8 @@ function isNumericalValue(value) {
 }
 
 const StyledTable = styled.table`
-  margin: 1rem 0;
-
   td {
-    padding: 0rem 0.5rem;
+    padding: 1px 0.5rem;
     vertical-align: middle;
   }
 `;

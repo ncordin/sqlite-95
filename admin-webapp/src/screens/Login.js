@@ -39,6 +39,7 @@ export function Login() {
         title="Enter Admin password"
         onClose={() => null}
         style={{ width: 600, minHeight: 200 }}
+        active
       >
         <form
           onSubmit={(event) => {
@@ -73,7 +74,7 @@ export function Login() {
 
             <section>
               <LargeButton type="submit">Ok</LargeButton>
-              <Space vertical />
+              <Space vertical size={0.5} />
               <LargeButton onClick={() => null} disabled>
                 Cancel
               </LargeButton>

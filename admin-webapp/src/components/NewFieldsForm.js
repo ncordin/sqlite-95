@@ -22,7 +22,7 @@ const StyledTable = styled.table`
 
   td {
     vertical-align: middle;
-    padding-right: 0 8px;
+    padding-right: 1px 8px;
   }
 `;
 

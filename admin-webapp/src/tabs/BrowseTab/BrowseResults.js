@@ -37,73 +37,66 @@ export function BrowseResults({
   }
 
   return (
-    <div
-      style={{
-        width: 'calc(100vw - 345px)',
-        overflowX: 'auto',
-      }}
-    >
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableHeadCell></TableHeadCell>
-            <TableHeadCell></TableHeadCell>
-            {headers
-              .filter((header) => header !== 'rowid')
-              .map((header) => (
-                <TableHeadCell
-                  key={header}
-                  onClick={() => changeOrderBy(header)}
+    <Table>
+      <TableHead>
+        <TableRow>
+          <TableHeadCell></TableHeadCell>
+          <TableHeadCell></TableHeadCell>
+          {headers
+            .filter((header) => header !== 'rowid')
+            .map((header) => (
+              <TableHeadCell
+                key={header}
+                onClick={() => changeOrderBy(header)}
+                style={{ cursor: 'pointer' }}
+              >
+                <BoldIf condition={orderBy === header}>{header}</BoldIf>
+              </TableHeadCell>
+            ))}
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows.map((row, index) => {
+          const values = Object.entries(row)
+            .filter(([key]) => key !== 'rowid')
+            .map(([, value]) => value);
+
+          return (
+            <TableRow key={index}>
+              <TableDataCell style={{ width: 40 }}>
+                <Checkbox
+                  checked={selected.includes(index)}
+                  onChange={(event) =>
+                    changeSelection(event.target.checked, index)
+                  }
+                />
+              </TableDataCell>
+              <TableDataCell style={{ width: 40 }}>
+                <Anchor
                   style={{ cursor: 'pointer' }}
+                  onClick={() => selectEditingRow(row.rowid)}
                 >
-                  <BoldIf condition={orderBy === header}>{header}</BoldIf>
-                </TableHeadCell>
+                  edit
+                </Anchor>
+              </TableDataCell>
+
+              {values.map((value, valuesIndex) => (
+                <TableDataCell
+                  key={`${index}-${valuesIndex}`}
+                  style={{
+                    whiteSpace: 'nowrap',
+                    maxWidth: 200,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {value === null ? <Null /> : value}
+                </TableDataCell>
               ))}
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row, index) => {
-            const values = Object.entries(row)
-              .filter(([key]) => key !== 'rowid')
-              .map(([, value]) => value);
-
-            return (
-              <TableRow key={index}>
-                <TableDataCell style={{ width: 40 }}>
-                  <Checkbox
-                    checked={selected.includes(index)}
-                    onChange={(event) =>
-                      changeSelection(event.target.checked, index)
-                    }
-                  />
-                </TableDataCell>
-                <TableDataCell style={{ width: 40 }}>
-                  <Anchor
-                    style={{ cursor: 'pointer' }}
-                    onClick={() => selectEditingRow(row.rowid)}
-                  >
-                    edit
-                  </Anchor>
-                </TableDataCell>
-
-                {values.map((value, valuesIndex) => (
-                  <TableDataCell
-                    key={`${index}-${valuesIndex}`}
-                    style={{
-                      whiteSpace: 'nowrap',
-                      maxWidth: 200,
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {value === null ? <Null /> : value}
-                  </TableDataCell>
-                ))}
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
-    </div>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
   );
 }

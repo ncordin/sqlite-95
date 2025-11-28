@@ -20,10 +20,8 @@ const isNumericalType = (type) => {
 };
 
 const StyledTable = styled.table`
-  margin: 1rem 0;
-
   td {
-    padding: 2px 8px;
+    padding: 1px 8px;
     vertical-align: middle;
   }
 `;

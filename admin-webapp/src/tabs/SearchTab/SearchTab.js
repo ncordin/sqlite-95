@@ -10,6 +10,7 @@ import { BrowseResults } from '../BrowseTab/BrowseResults';
 import { useUrlParam } from '../../utils/useUrlParam';
 import { Edit } from '../BrowseTab/Edit';
 import { Space } from '../../components/Space';
+import { BottomContent } from '../../components/BottomContent';
 
 export function SearchTab() {
   const [rowid, setRowid] = useUrlParam('rowid');
@@ -102,7 +103,7 @@ export function SearchTab() {
       </form>
 
       {results.length > 0 && (
-        <div style={{ marginTop: '1rem' }}>
+        <BottomContent>
           <BrowseResults
             data={results}
             orderBy={orderBy}
@@ -111,7 +112,7 @@ export function SearchTab() {
             selected={selected}
             setSelected={setSelected}
           />
-        </div>
+        </BottomContent>
       )}
     </>
   );

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { TextField, Button, Panel, ScrollView } from 'react95';
+import { TextField, Button, Panel } from 'react95';
 import styled from 'styled-components';
 
 import { SqlResults } from './SqlResults';
 import { useTables } from '../../contexts/Tables';
 import { useApi } from '../../utils/useApi';
+import { BottomContent } from '../../components/BottomContent';
 
 const FlexRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 1rem;
 `;
 
 const FlexColumn = styled.div`
@@ -65,15 +65,10 @@ export function SqlTab() {
         </Panel>
       </FlexRow>
 
-      {response && response.length && !response.error ? (
-        <ScrollView
-          style={{
-            width: 'calc(100vw - 346px)',
-            height: 150 + Math.min(response.length * 20, 200),
-          }}
-        >
+      {response && response.length > 0 && !response.error ? (
+        <BottomContent>
           <SqlResults data={response} />
-        </ScrollView>
+        </BottomContent>
       ) : null}
     </>
   );

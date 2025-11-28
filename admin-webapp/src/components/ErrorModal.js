@@ -22,6 +22,7 @@ export function ErrorModal({ title, children, onClose }) {
         title={title}
         onClose={onClose}
         style={{ width: 400, minHeight: 200 }}
+        active
       >
         <Icon>❌</Icon>
         {children}

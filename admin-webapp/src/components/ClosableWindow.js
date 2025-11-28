@@ -8,6 +8,33 @@ const StyledWindow = styled(Window)`
     align-items: center;
     justify-content: space-between;
   }
+
+  .window-controls {
+    display: flex;
+    gap: 2px;
+  }
+
+  .grow-icon {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-left: -1px;
+    margin-top: -1px;
+    position: relative;
+
+    &:before {
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 13px;
+      border: 2px solid black;
+      border-top: 4px solid black;
+      top: 2px;
+      left: 1px;
+      box-sizing: border-box;
+    }
+  }
+
   .close-icon {
     display: inline-block;
     width: 16px;
@@ -36,28 +63,42 @@ const StyledWindow = styled(Window)`
       transform: translateY(-50%);
     }
   }
+
   .window:nth-child(2) {
     margin: 2rem;
   }
 `;
 
 export function ClosableWindow({
-  title,
+  title = '',
   children,
-  onClose,
+  onMaximize = undefined,
+  onClose = undefined,
   className = '',
   style = {},
+  active,
 }) {
   return (
     <StyledWindow className={className} style={style}>
-      <WindowHeader className="window-header">
-        <span>{title}</span>
-        <Button onClick={onClose}>
-          <span className="close-icon" />
-        </Button>
-      </WindowHeader>
+      {(title || onClose || onMaximize) && (
+        <WindowHeader className="window-header" active={active}>
+          <span>{title}</span>
+          <div className="window-controls">
+            {onMaximize && (
+              <Button onClick={onMaximize}>
+                <span className="grow-icon" />
+              </Button>
+            )}
+            {onClose && (
+              <Button onClick={onClose}>
+                <span className="close-icon" />
+              </Button>
+            )}
+          </div>
+        </WindowHeader>
+      )}
 
-      <WindowContent>{children}</WindowContent>
+      <WindowContent style={{ padding: 12 }}>{children}</WindowContent>
     </StyledWindow>
   );
 }

@@ -10,12 +10,12 @@ import { makeDelete } from '../../utils/query';
 import { useApi } from '../../utils/useApi';
 import { useUrlParam } from '../../utils/useUrlParam';
 import { Space } from '../../components/Space';
+import { BottomContent } from '../../components/BottomContent';
 
 const FlexRow = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-bottom: 1.5rem;
 `;
 
 const FlexColumn = styled.div`
@@ -107,15 +107,17 @@ export function BrowseTab() {
         </InnerPanel>
       </FlexRow>
 
-      {response && (
-        <BrowseResults
-          data={response}
-          orderBy={orderBy}
-          changeOrderBy={changeOrderBy}
-          selectEditingRow={setRowid}
-          selected={selected}
-          setSelected={setSelected}
-        />
+      {response && response.length > 0 && (
+        <BottomContent>
+          <BrowseResults
+            data={response}
+            orderBy={orderBy}
+            changeOrderBy={changeOrderBy}
+            selectEditingRow={setRowid}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        </BottomContent>
       )}
     </>
   );

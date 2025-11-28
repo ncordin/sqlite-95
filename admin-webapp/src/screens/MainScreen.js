@@ -18,15 +18,19 @@ import { SearchTab } from '../tabs/SearchTab';
 
 const Container = styled.div`
   padding: 1rem;
-`;
-
-const FlexRow = styled.div`
   display: flex;
-  flex-direction: row;
+  gap: 12px;
+  align-items: flex-start;
 `;
 
 const Column = styled.div`
   padding: 0px;
+`;
+
+const RightColumn = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 `;
 
 const StyledTab = styled(Tab)`
@@ -81,15 +85,21 @@ export function MainScreen() {
   return (
     <Container>
       <ClosableWindow
-        title={`SQLite 95 - ${database}`}
-        onClose={onClose}
-        style={{ width: '100%' }}
+        title={`${database}`}
+        active={false}
+        style={{ marginTop: 24 }}
       >
-        <FlexRow>
-          <Column>
-            <TableList createTable={() => setCurrentTab('create-table')} />
-          </Column>
-          <Column style={{ flex: 1, paddingLeft: 16, paddingBottom: 50 }}>
+        <TableList createTable={() => setCurrentTab('create-table')} />
+      </ClosableWindow>
+
+      <RightColumn>
+        <ClosableWindow
+          title={`${currentTable?.name} - SQLite 95`}
+          onClose={onClose}
+          style={{ width: 780 }}
+          active
+        >
+          <Column style={{ paddingBottom: 8 }}>
             <Tabs
               value={currentTab}
               onChange={(value) => {
@@ -109,8 +119,10 @@ export function MainScreen() {
               )}
             </TabBody>
           </Column>
-        </FlexRow>
-      </ClosableWindow>
+        </ClosableWindow>
+
+        <div id="bottom-content-portal" />
+      </RightColumn>
     </Container>
   );
 }
