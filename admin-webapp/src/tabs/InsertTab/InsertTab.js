@@ -38,11 +38,11 @@ export function InsertTab({ onCreated }) {
         <RowForm row={editingRow} onChange={setEditingRow} />
       </GroupBox>
 
-      <Space size={1} vertical />
+      <Space size={0.5} vertical />
 
       <Button type="submit">Insert</Button>
 
-      <Space vertical />
+      <Space size={0.5} vertical />
 
       <InnerPanel>{query}</InnerPanel>
     </form>

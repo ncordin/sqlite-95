@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button, GroupBox } from 'react95';
 
 import { useTables } from '../../contexts/Tables';
+import styled from 'styled-components';
 import { SearchForm } from './SearchForm';
 import { useApi } from '../../utils/useApi';
 import { InnerPanel } from '../../components/InnerPanel';
@@ -11,10 +12,21 @@ import { useUrlParam } from '../../utils/useUrlParam';
 import { Edit } from '../BrowseTab/Edit';
 import { Space } from '../../components/Space';
 import { BottomContent } from '../../components/BottomContent';
+import { makeDelete } from '../../utils/query';
+
+const FlexRow = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
+const FlexColumn = styled.div`
+  margin-right: 8px;
+  display: flex;
+`;
 
 export function SearchTab() {
   const [rowid, setRowid] = useUrlParam('rowid');
-  const { currentTable } = useTables();
+  const { currentTable, refresh } = useTables();
   const { executeQuery } = useApi();
   const [searchCriteria, setSearchCriteria] = useState({});
   const [results, setResults] = useState([]);
@@ -80,6 +92,19 @@ export function SearchTab() {
     setOrderBy(field);
   };
 
+  const deleteSelected = async () => {
+    const rows = selected.map((index) => results[index]);
+    setSelected([]);
+
+    for (const row of rows) {
+      const sql = makeDelete(currentTable.name, row);
+      await executeQuery(sql);
+    }
+
+    executeSearch();
+    refresh();
+  };
+
   if (rowid) {
     return <Edit />;
   }
@@ -93,13 +118,23 @@ export function SearchTab() {
 
         <Space vertical size={0.5} />
 
-        <Button type="submit" style={{ marginRight: '0.5rem' }}>
-          Search
-        </Button>
+        <InnerPanel>{query}</InnerPanel>
 
         <Space vertical size={0.5} />
 
-        <InnerPanel>{query}</InnerPanel>
+        <FlexRow>
+          <FlexColumn>
+            <Button type="submit">Search</Button>
+            <Button
+              onClick={deleteSelected}
+              disabled={!selected.length}
+              style={{ width: 150, marginLeft: 8 }}
+            >
+              Delete selected ({selected.length})
+            </Button>
+          </FlexColumn>
+          {hasSearched && <InnerPanel>{results.length} results</InnerPanel>}
+        </FlexRow>
       </form>
 
       {results.length > 0 && (
