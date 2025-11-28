@@ -5,7 +5,13 @@ import { ScrollView } from 'react95';
 
 export function BottomContent({ children, title = '' }) {
   const [visible, setVisible] = useState(true);
-  const [isMaximized, setIsMaximized] = useState(false);
+  const [isMaximized, setIsMaximized] = useState(() => {
+    return localStorage.getItem('bottomContent.isMaximized') === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem('bottomContent.isMaximized', String(isMaximized));
+  }, [isMaximized]);
 
   useEffect(() => {
     return () => setVisible(false);
@@ -40,8 +46,8 @@ export function BottomContent({ children, title = '' }) {
     >
       <ScrollView
         style={{
-          width: 'calc(100vw - 340px)',
-          height: 'calc(100vh - 340px)',
+          width: 'calc(100vw - 350px)',
+          height: 'calc(100vh - 350px)',
         }}
       >
         {children}
