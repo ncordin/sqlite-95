@@ -8,9 +8,9 @@ import { Login } from './screens/Login';
 import { PasswordProvider, usePassword } from './contexts/Password';
 
 function CurrentScreen() {
-  const { password } = usePassword();
+  const { isAuthenticated } = usePassword();
 
-  return password ? <Desktop /> : <Login />;
+  return isAuthenticated ? <Desktop /> : <Login />;
 }
 
 export function App() {

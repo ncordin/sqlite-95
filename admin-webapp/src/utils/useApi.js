@@ -4,7 +4,7 @@ import { usePassword } from '../contexts/Password';
 
 const BASE_URL = './';
 
-function fetchSqliteApi({ url, params, password, database = '' }) {
+export function fetchSqliteApi({ url, params, password, database = '' }) {
   return fetch(`${BASE_URL}${url}`, {
     method: 'POST',
     cache: 'no-cache',

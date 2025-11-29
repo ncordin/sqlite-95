@@ -15,7 +15,7 @@ const Overlay = styled.div`
 
 const Container = styled.div`
   position: fixed;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
   z-index: 1000;

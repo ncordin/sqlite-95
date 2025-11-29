@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { MainScreen } from '../screens/MainScreen';
 import { Shortcut } from '../components/Shortcut';
+import { ContentModal } from '../components/ContentModal';
 import { useDatabase } from '../contexts/Database';
 import { TablesProvider } from '../contexts/Tables';
 import { useApi } from '../utils/useApi';
@@ -12,6 +13,7 @@ export function Desktop() {
   const { logout } = usePassword();
   const { fetch } = useApi();
   const [databases, setDatabases] = useState([]);
+  const [showExploreModal, setShowExploreModal] = useState(false);
 
   useEffect(() => {
     fetch('api/files').then((response) => {
@@ -28,7 +30,11 @@ export function Desktop() {
       )}
       {!database && (
         <>
-          <Shortcut icon="computer" name="Explore" onClick={() => null} />
+          <Shortcut
+            icon="computer"
+            name="Explore"
+            onClick={() => setShowExploreModal(true)}
+          />
 
           {databases.map((file) => (
             <Shortcut
@@ -40,6 +46,15 @@ export function Desktop() {
           ))}
 
           <Shortcut icon="desktop" name="Log out" onClick={logout} />
+
+          {showExploreModal && (
+            <ContentModal
+              title="Sorry :/"
+              onClose={() => setShowExploreModal(false)}
+            >
+              Exploring is not allowed in this server.
+            </ContentModal>
+          )}
         </>
       )}
     </>

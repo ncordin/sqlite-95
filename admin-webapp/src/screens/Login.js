@@ -1,14 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { Button, TextField } from 'react95';
+import { Button, Frame, Separator, TextField } from 'react95';
 import { ClosableWindow } from '../components/ClosableWindow';
 import { Space } from '../components/Space';
 import { usePassword } from '../contexts/Password';
 
 const Container = styled.div`
   position: fixed;
-  top: 40%;
+  top: 45%;
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 `;
@@ -24,7 +24,9 @@ const LargeButton = styled(Button)`
 
 export function Login() {
   const [localPassword, setLocalPassword] = useState('');
-  const { setPassword } = usePassword();
+  const [title, setTitle] = useState(null);
+  const [error, setError] = useState(null);
+  const { login } = usePassword();
   const passwordRef = useRef(null);
 
   useEffect(() => {
@@ -36,21 +38,33 @@ export function Login() {
   return (
     <Container>
       <ClosableWindow
-        title="Enter Admin password"
-        onClose={() => null}
-        style={{ width: 600, minHeight: 200 }}
+        title={title || 'Welcome! - SQLite 95'}
+        style={{ width: 500 }}
         active
       >
         <form
-          onSubmit={(event) => {
+          onSubmit={async (event) => {
             event.preventDefault();
-            setPassword(localPassword);
-          }}
-        >
-          <Flex>
-            <img src="./assets/keys.ico" height="40" width="40" />
 
-            <table style={{ flex: 1, margin: '0 32px' }}>
+            const result = await login(localPassword);
+
+            if (!result.success) {
+              setTitle(result.error.title);
+              setError(result.error.message);
+              setLocalPassword('');
+              passwordRef.current.focus();
+            }
+          }}
+          style={{ display: 'flex', flexDirection: 'column', height: 150 }}
+        >
+          <Flex style={{ flex: 1, gap: 8 }}>
+            {error ? (
+              <span style={{ fontSize: '2.5rem', marginRight: 4 }}>❌</span>
+            ) : (
+              <img src="./assets/keys.ico" height="40" width="40" />
+            )}
+
+            <table style={{ flex: 1, margin: '0 8px' }}>
               <tbody>
                 <tr style={{ height: 42 }}>
                   <td>Username:</td>
@@ -80,6 +94,16 @@ export function Login() {
               </LargeButton>
             </section>
           </Flex>
+
+          <Frame
+            variant="well"
+            style={{
+              padding: '2px 8px',
+              width: '100%',
+            }}
+          >
+            {error || 'Admin password is required.'}
+          </Frame>
         </form>
       </ClosableWindow>
     </Container>
