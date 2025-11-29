@@ -61,13 +61,18 @@ export function SqlTab() {
             width: '100%',
           }}
         >
-          {`${response ? response.length : 0} results`}
+          {`${response?.data ? response.data.length : 0} results in ${
+            response?.duration || 0
+          }ms`}
         </Panel>
       </FlexRow>
 
-      {response && response.length > 0 && !response.error ? (
-        <BottomContent>
-          <SqlResults data={response} />
+      {response &&
+      response.data &&
+      response.data.length > 0 &&
+      !response.error ? (
+        <BottomContent title="SQL query results">
+          <SqlResults data={response.data} />
         </BottomContent>
       ) : null}
     </>

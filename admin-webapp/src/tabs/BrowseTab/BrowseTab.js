@@ -58,8 +58,8 @@ export function BrowseTab() {
   const execute = async (value) => {
     setValue(value);
 
-    const data = await executeQuery(value);
-    setResponse(data);
+    const response = await executeQuery(value);
+    setResponse(response);
   };
 
   const changeOrderBy = (field) => {
@@ -69,7 +69,7 @@ export function BrowseTab() {
 
   const deleteSelected = async () => {
     setSelected([]);
-    const rows = selected.map((index) => response[index]);
+    const rows = selected.map((index) => response?.data[index]);
 
     for (const row of rows) {
       const sql = makeDelete(currentTable.name, row);
@@ -103,14 +103,16 @@ export function BrowseTab() {
         </FlexColumn>
 
         <InnerPanel>
-          {response ? `${response.length} results` : 'Loading...'}
+          {response?.data
+            ? `${response.data.length} results in ${response.duration}ms`
+            : 'Loading...'}
         </InnerPanel>
       </FlexRow>
 
-      {response && response.length > 0 && (
-        <BottomContent>
+      {response && response.data.length > 0 && (
+        <BottomContent title={`Browsing ${currentTable.name}`}>
           <BrowseResults
-            data={response}
+            data={response.data}
             orderBy={orderBy}
             changeOrderBy={changeOrderBy}
             selectEditingRow={setRowid}

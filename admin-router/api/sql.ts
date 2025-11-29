@@ -1,13 +1,13 @@
+import Database from 'bun:sqlite';
 import { Controller } from '../../controller/types';
 import { getError } from '../../orm/utils/error';
 import { getDatabase } from '../utils';
 
 const executeSql = (
-  databaseName: string,
+  database: Database,
   query: string,
   params: string[] = []
 ) => {
-  const database = getDatabase(databaseName);
   const lowerSql = query.trim().toLowerCase();
 
   if (lowerSql.startsWith('select ') || lowerSql.startsWith('pragma ')) {
@@ -22,18 +22,25 @@ const executeSql = (
 };
 
 const controller: Controller = (request, response) => {
-  // Think about a tool to check data and apply types:
   const params = request.body.params as unknown as string[];
 
   try {
-    const result = executeSql(
-      String(request.headers.database),
+    const database = getDatabase(String(request.headers.database));
+    const start = Bun.nanoseconds();
+
+    const data = executeSql(
+      database,
       String(request.body.query),
       params
-    ) as Array<{ [key: string]: string }>;
+    ) as Array<{
+      [key: string]: string;
+    }>;
+
+    const durationInMs = (Bun.nanoseconds() - start) / 1000000;
+    const duration = Math.round(durationInMs * 100) / 100;
 
     response.setStatusCode(202);
-    return result;
+    return { data, duration };
   } catch (e) {
     const error = getError(e);
 

@@ -17,12 +17,10 @@ SQLite ORM with a web admin.
 - add more Response types: redirection, image, etc...
 - /admin should redirect to /admin/ automatically
 
-* dynamique controllers routing
-
 # Bugs
 
 - encode crash if value is wrong (eg: null instead of null) (happens when differences DB vs declaration)
-- if a table has a primary key auto-increment, it will be an alias of rowid and break the edit in admin
+- if a table has a INTEGER primary key, it will be an alias of rowid and break the edit in admin
 
 # How to publish new version
 

@@ -30,6 +30,7 @@ export function SearchTab() {
   const { executeQuery } = useApi();
   const [searchCriteria, setSearchCriteria] = useState({});
   const [results, setResults] = useState([]);
+  const [duration, setDuration] = useState(0);
   const [orderBy, setOrderBy] = useState(null);
   const [orderByDirection, setOrderByDirection] = useState(true);
   const [selected, setSelected] = useState([]);
@@ -77,8 +78,9 @@ export function SearchTab() {
   }, [orderBy, orderByDirection]);
 
   const executeSearch = async () => {
-    const data = await executeQuery(query);
-    setResults(data || []);
+    const response = await executeQuery(query);
+    setResults(response.data || []);
+    setDuration(response.duration || 0);
     setHasSearched(true);
   };
 
@@ -133,12 +135,16 @@ export function SearchTab() {
               Delete selected ({selected.length})
             </Button>
           </FlexColumn>
-          {hasSearched && <InnerPanel>{results.length} results</InnerPanel>}
+          {hasSearched && (
+            <InnerPanel>
+              {results.length} results in {duration}ms
+            </InnerPanel>
+          )}
         </FlexRow>
       </form>
 
       {results.length > 0 && (
-        <BottomContent>
+        <BottomContent title="Search results">
           <BrowseResults
             data={results}
             orderBy={orderBy}

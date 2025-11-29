@@ -17,8 +17,8 @@ export function Edit() {
   useEffect(() => {
     executeQuery(
       `SELECT rowid, * FROM \`${currentTable.name}\` WHERE rowid=${rowid}`
-    ).then((data) => {
-      setEditingRow(data[0]);
+    ).then((response) => {
+      setEditingRow(response.data[0]);
     });
   }, [rowid]);
 
