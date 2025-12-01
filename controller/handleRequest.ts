@@ -65,7 +65,7 @@ export const handleRequest = async (
             error: {
               title: 'Invalid password',
               message:
-                'Password is declared in server configuration and can not be empty.',
+                'The password is set in the server configuration and cannot be empty.',
             },
           }),
           { status: 403, headers: { 'Content-Type': 'application/json' } }

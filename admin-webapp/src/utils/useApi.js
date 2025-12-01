@@ -60,5 +60,9 @@ export function useApi() {
     return fetch('api/download', { database });
   };
 
-  return { fetch, executeQuery, download };
+  const moveColumn = async (params) => {
+    return fetch('api/moveColumn', params);
+  };
+
+  return { fetch, executeQuery, download, moveColumn };
 }

@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { ClosableWindow } from './ClosableWindow';
-import { ScrollView } from 'react95';
 
 const Overlay = styled.div`
   position: fixed;
@@ -21,14 +20,6 @@ const Container = styled.div`
   z-index: 1000;
 `;
 
-const Content = styled.pre`
-  white-space: pre-wrap;
-  word-break: break-all;
-  margin: 0;
-  font-family: inherit;
-  font-size: 14px;
-`;
-
 export function ContentModal({ title, children, onClose }) {
   return (
     <>
@@ -40,9 +31,7 @@ export function ContentModal({ title, children, onClose }) {
           style={{ width: 500, maxWidth: '90vw' }}
           active
         >
-          <ScrollView style={{ maxHeight: '60vh', padding: 8 }}>
-            <Content>{children}</Content>
-          </ScrollView>
+          {children}
         </ClosableWindow>
       </Container>
     </>

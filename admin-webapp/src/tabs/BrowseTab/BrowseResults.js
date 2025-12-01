@@ -8,12 +8,21 @@ import {
   TableDataCell,
   Checkbox,
   Anchor,
+  ScrollView,
 } from 'react95';
 import styled from 'styled-components';
 
 import { BoldIf } from '../../components/BoldIf';
 import { Null } from '../../components/Null';
 import { ContentModal } from '../../components/ContentModal';
+
+const Content = styled.pre`
+  white-space: pre-wrap;
+  word-break: break-all;
+  margin: 0;
+  font-family: inherit;
+  font-size: 14px;
+`;
 
 const CellContainer = styled.div`
   display: flex;
@@ -86,7 +95,9 @@ export function BrowseResults({
     <>
       {modalContent && (
         <ContentModal title={modalContent.columnName} onClose={closeModal}>
-          {modalContent.content}
+          <ScrollView style={{ maxHeight: '60vh', padding: 8 }}>
+            <Content>{modalContent.content}</Content>
+          </ScrollView>
         </ContentModal>
       )}
       <Table>

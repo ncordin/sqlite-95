@@ -25,8 +25,11 @@ export function ListIndex({ indexes, refreshIndexes, currentTable }) {
 
         return (
           <FlexRow key={index.name} between>
-            <span style={{ flexBasis: 200 }}>{index.name}</span>
-            {index.unique ? 'unique' : ''}
+            <span style={{ flexBasis: 200, fontWeight: 'bold' }}>
+              {index.columns?.join(':')}
+            </span>
+
+            <span>{index.unique ? 'unique' : ''}</span>
             <Button onClick={drop}>Drop</Button>
           </FlexRow>
         );

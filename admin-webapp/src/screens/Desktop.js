@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { MainScreen } from '../screens/MainScreen';
 import { Shortcut } from '../components/Shortcut';
-import { ContentModal } from '../components/ContentModal';
+import { ErrorModal } from '../components/ErrorModal';
 import { useDatabase } from '../contexts/Database';
 import { TablesProvider } from '../contexts/Tables';
 import { useApi } from '../utils/useApi';
@@ -48,12 +48,12 @@ export function Desktop() {
           <Shortcut icon="desktop" name="Log out" onClick={logout} />
 
           {showExploreModal && (
-            <ContentModal
+            <ErrorModal
               title="Sorry :/"
               onClose={() => setShowExploreModal(false)}
             >
               Exploring is not allowed in this server.
-            </ContentModal>
+            </ErrorModal>
           )}
         </>
       )}

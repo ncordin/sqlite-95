@@ -74,10 +74,6 @@ export function CreateIndex({ refreshIndexes }) {
             onChange={(event) => setIsUnique(event.target.checked)}
           />
         </FlexRow>
-        <FlexRow>
-          <Description>Name</Description>
-          <TextField style={{ width: 300 }} value={name} disabled />
-        </FlexRow>
 
         <Space vertical />
 

@@ -7,6 +7,7 @@ const StyledWindow = styled(Window)`
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-left: 8px;
   }
 
   .window-controls {
@@ -98,7 +99,9 @@ export function ClosableWindow({
         </WindowHeader>
       )}
 
-      <WindowContent style={{ padding: 12 }}>{children}</WindowContent>
+      <WindowContent style={{ padding: 8, paddingTop: 12 }}>
+        {children}
+      </WindowContent>
     </StyledWindow>
   );
 }

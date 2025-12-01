@@ -14,6 +14,7 @@ import {
 import { useApi } from '../../utils/useApi';
 import { CreateIndex } from './CreateIndex';
 import { ListIndex } from './ListIndex';
+import { MoveField } from './MoveField';
 import { InnerPanel } from '../../components/InnerPanel';
 
 const StyledTable = styled.table`
@@ -61,10 +62,29 @@ export function StructureTab() {
 
   const [indexes, setIndexes] = useState([]);
 
-  const refreshIndexes = () => {
-    executeQuery(`PRAGMA index_list("${currentTable.name}");`).then(
-      (response) => setIndexes(response.data)
+  const [movingField, setMovingField] = useState(null);
+
+  const refreshIndexes = async () => {
+    const indexListResponse = await executeQuery(
+      `PRAGMA index_list("${currentTable.name}");`
     );
+    const indexList = indexListResponse.data;
+
+    // Pour chaque index, récupérer les colonnes
+    const indexesWithColumns = await Promise.all(
+      indexList.map(async (index) => {
+        const columnsResponse = await executeQuery(
+          `PRAGMA index_info("${index.name}");`
+        );
+        const columns = columnsResponse.data.map((col) => col.name);
+        return {
+          ...index,
+          columns,
+        };
+      })
+    );
+
+    setIndexes(indexesWithColumns);
   };
 
   useEffect(() => {
@@ -129,8 +149,9 @@ export function StructureTab() {
                     >
                       rename
                     </Link>{' '}
-                    - <Link onClick={() => drop(field.name)}>drop</Link> -{' '}
-                    <Link onClick={() => null}>move</Link>
+                    -{' '}
+                    <Link onClick={() => setMovingField(field.name)}>move</Link>{' '}
+                    - <Link onClick={() => drop(field.name)}>drop</Link>
                   </td>
                 </tr>
               );
@@ -174,6 +195,16 @@ export function StructureTab() {
       <Space size={2} vertical />
 
       <CreateIndex refreshIndexes={refreshIndexes} />
+
+      <MoveField
+        fieldName={movingField}
+        currentTable={currentTable}
+        onClose={() => setMovingField(null)}
+        onSuccess={() => {
+          refresh();
+          setMovingField(null);
+        }}
+      />
     </div>
   );
 }
