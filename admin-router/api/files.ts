@@ -7,7 +7,11 @@ const controller: Controller = () => {
     const path = process.cwd();
     const files = fileSystem
       .readdirSync(path)
-      .filter((name) => name.endsWith('.db'));
+      .filter((name) => name.endsWith('.db'))
+      .map((name) => {
+        const stats = fileSystem.statSync(`${path}/${name}`);
+        return { name, size: stats.size };
+      });
 
     return files;
   } catch (e) {

@@ -6,10 +6,11 @@ import { InnerPanel } from '../../components/InnerPanel';
 import { useApi } from '../../utils/useApi';
 import { useDatabase } from '../../contexts/Database';
 import { useConfirm } from '../../contexts/Modal';
+import { formatFileSize } from '../../utils/formatFileSize';
 
 export function ManagementTab() {
   const { currentTable, refresh } = useTables();
-  const { database } = useDatabase();
+  const { database, databaseSize } = useDatabase();
   const { executeQuery, download } = useApi();
   const [newTableName, setNewTableName] = useState(currentTable.name);
   const confirm = useConfirm();
@@ -85,7 +86,14 @@ export function ManagementTab() {
       </form>
 
       <GroupBox label="Export database" style={{ marginBottom: 24 }}>
-        <Button onClick={onDownload}>Download a copy</Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <Button onClick={onDownload}>Download a copy</Button>
+          {databaseSize && (
+            <span style={{ color: '#868686' }}>
+              {formatFileSize(databaseSize)}
+            </span>
+          )}
+        </div>
       </GroupBox>
 
       <GroupBox label="Danger zone" style={{ marginBottom: '2rem' }}>
