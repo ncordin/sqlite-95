@@ -157,10 +157,8 @@ const controller: Controller = (request, response) => {
     for (const index of indexes) {
       const columns = getIndexColumns(database, index.name);
       // Créer un nouveau nom d'index unique pour la table de transition
-      const newIndexName = `${transitionTableName}_${index.name.replace(
-        `${tableName}_`,
-        ''
-      )}`;
+      const randomSuffix = Math.floor(Math.random() * 9000) + 1000;
+      const newIndexName = `${index.name}_${randomSuffix}`;
       const createIndexSql = createIndexQuery(
         newIndexName,
         transitionTableName,

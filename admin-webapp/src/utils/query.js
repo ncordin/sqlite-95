@@ -49,9 +49,11 @@ export function makeCreateTable(table, fields) {
 }
 
 export function makeIndex({ name, fields, isUnique, tableName }) {
+  const randomSuffix = Math.floor(Math.random() * 9000) + 1000;
+
   return `CREATE ${
     isUnique ? 'UNIQUE' : ''
-  } INDEX "${tableName}_${name}" ON "${tableName}"(${fields
+  } INDEX "${tableName}_${name}_${randomSuffix}" ON "${tableName}"(${fields
     .map((name) => escapeFieldName(name))
     .join(', ')});`;
 }

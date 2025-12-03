@@ -14,7 +14,7 @@ import styled from 'styled-components';
 
 import { BoldIf } from '../../components/BoldIf';
 import { Null } from '../../components/Null';
-import { ContentModal } from '../../components/ContentModal';
+import { ContentModal } from '../../components/Modal';
 
 const Content = styled.pre`
   white-space: pre-wrap;

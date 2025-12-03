@@ -1,5 +1,5 @@
 import { useDatabase } from '../contexts/Database';
-import { useErrorModal } from '../contexts/ErrorModal';
+import { useErrorModal } from '../contexts/Modal';
 import { usePassword } from '../contexts/Password';
 
 const BASE_URL = './';

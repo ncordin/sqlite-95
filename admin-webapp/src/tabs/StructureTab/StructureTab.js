@@ -16,6 +16,7 @@ import { CreateIndex } from './CreateIndex';
 import { ListIndex } from './ListIndex';
 import { MoveField } from './MoveField';
 import { InnerPanel } from '../../components/InnerPanel';
+import { useConfirm } from '../../contexts/Modal';
 
 const StyledTable = styled.table`
   margin: 0;
@@ -54,6 +55,7 @@ function getDefaultValue(field) {
 export function StructureTab() {
   const { executeQuery } = useApi();
   const { currentTable, refresh } = useTables();
+  const confirm = useConfirm();
 
   const [renamingField, setRenamingField] = useState(null);
   const [renameFieldName, setRenameFieldName] = useState('');
@@ -105,6 +107,15 @@ export function StructureTab() {
   };
 
   const drop = async (fieldName) => {
+    const confirmed = await confirm({
+      title: 'Confirmation',
+      message: `Are you sure you want to drop the column "${fieldName}"?`,
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     const query = makeDropField({
       fieldName,
       tableName: currentTable.name,
