@@ -41,8 +41,22 @@ export async function callController(
   url.searchParams.forEach((value, key) => {
     query[key] = value;
   });
-  const bodyText = await request.text();
-  const body = bodyText ? JSON.parse(bodyText) : {};
+
+  const contentType = request.headers.get('content-type') || '';
+  let body: Record<string, string | number | boolean | null | File> = {};
+
+  // Used for file upload:
+  if (contentType.includes('multipart/form-data')) {
+    const formData = await request.formData();
+    formData.forEach((value, key) => {
+      body[key] = value as string | File;
+    });
+  }
+  // All other request use JSON:
+  else {
+    const bodyText = await request.text();
+    body = bodyText ? JSON.parse(bodyText) : {};
+  }
 
   const controllerRequest = {
     url: String(request.url),
@@ -54,7 +68,7 @@ export async function callController(
     read: (
       from: 'query' | 'body' | 'cookie',
       name: string,
-      type: 'string' | 'number' | 'boolean',
+      type: 'string' | 'number' | 'boolean' | 'file',
       defaultValue: unknown
     ) => {
       const source =
@@ -65,6 +79,9 @@ export async function callController(
           : parseCookie(request.headers.get('cookie') ?? '');
       const value = (source || {})[name];
 
+      if (type === 'file') {
+        return value instanceof File ? value : defaultValue;
+      }
       if (type === 'boolean') {
         return read(value, 'boolean', defaultValue);
       }

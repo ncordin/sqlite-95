@@ -37,7 +37,7 @@ type Headers = {
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
-type Body = { [key: string]: string | number | boolean | null };
+type Body = { [key: string]: string | number | boolean | null | File };
 
 function read<T>(
   from: 'query' | 'body' | 'cookie',
@@ -60,7 +60,13 @@ function read<T>(
 function read<T>(
   from: 'query' | 'body' | 'cookie',
   name: string,
-  type: 'string' | 'number' | 'boolean',
+  type: 'file',
+  defaultValue: T
+): File | T;
+function read<T>(
+  from: 'query' | 'body' | 'cookie',
+  name: string,
+  type: 'string' | 'number' | 'boolean' | 'file',
   defaultValue: T
 ) {}
 

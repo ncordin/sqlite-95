@@ -10,6 +10,7 @@ import { useApi } from '../utils/useApi';
 import { usePassword } from '../contexts/Password';
 import { formatFileSize } from '../utils/formatFileSize';
 import { Space } from '../components/Space';
+import { Upload } from './Upload';
 
 export function Desktop() {
   const { database, setDatabase } = useDatabase();
@@ -19,10 +20,14 @@ export function Desktop() {
   const [showExploreModal, setShowExploreModal] = useState(false);
   const [systemInfo, setSystemInfo] = useState(null);
 
-  useEffect(() => {
+  const refreshDatabases = () => {
     fetch('api/files').then((response) => {
       setDatabases(response);
     });
+  };
+
+  useEffect(() => {
+    refreshDatabases();
   }, []);
 
   const openExploreModal = () => {
@@ -57,7 +62,9 @@ export function Desktop() {
             />
           ))}
 
-          <Shortcut icon="desktop" name="Log out" onClick={logout} />
+          <Upload onUploadComplete={refreshDatabases} />
+
+          <Shortcut icon="desktop" name="Log off" onClick={logout} />
 
           {showExploreModal && systemInfo && (
             <ContentModal

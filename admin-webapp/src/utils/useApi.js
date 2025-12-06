@@ -64,5 +64,28 @@ export function useApi() {
     return fetch('api/moveColumn', params);
   };
 
-  return { fetch, executeQuery, download, moveColumn };
+  const uploadDatabase = async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await window.fetch(`${BASE_URL}api/upload`, {
+      method: 'POST',
+      headers: {
+        Password: password,
+      },
+      body: formData,
+    }).then((res) => res.json());
+
+    if (response.error) {
+      open(
+        response.error.title || 'Error!',
+        response.error.message ?? JSON.stringify(response.error)
+      );
+      return Promise.reject();
+    }
+
+    return response;
+  };
+
+  return { fetch, executeQuery, download, moveColumn, uploadDatabase };
 }
