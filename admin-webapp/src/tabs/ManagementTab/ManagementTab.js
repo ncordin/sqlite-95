@@ -62,7 +62,17 @@ export function ManagementTab() {
     const a = document.createElement('a');
     a.style.display = 'none';
     a.href = url;
-    a.download = database;
+
+    const today = new Date();
+    const dateSuffix = today.toISOString().slice(0, 10);
+    const [name, ext] = database.includes('.')
+      ? [
+          database.slice(0, database.lastIndexOf('.')),
+          database.slice(database.lastIndexOf('.')),
+        ]
+      : [database, ''];
+    a.download = `${name}_${dateSuffix}${ext}`;
+
     document.body.appendChild(a);
     a.click();
     window.URL.revokeObjectURL(url);
