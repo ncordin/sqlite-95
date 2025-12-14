@@ -11,6 +11,7 @@ import { usePassword } from '../contexts/Password';
 import { formatFileSize } from '../utils/formatFileSize';
 import { Space } from '../components/Space';
 import { Upload } from './Upload';
+import { Monitoring } from './Monitoring';
 
 export function Desktop() {
   const { database, setDatabase } = useDatabase();
@@ -46,11 +47,9 @@ export function Desktop() {
       )}
       {!database && (
         <>
-          <Shortcut
-            icon="computer"
-            name="My Computer"
-            onClick={openExploreModal}
-          />
+          <Monitoring />
+
+          <Shortcut icon="system" name="System" onClick={openExploreModal} />
 
           {databases.map((file) => (
             <Shortcut
@@ -68,22 +67,23 @@ export function Desktop() {
 
           {showExploreModal && systemInfo && (
             <ContentModal
-              title="My Computer"
+              title="System"
               onClose={() => setShowExploreModal(false)}
+              width={400}
             >
-              <GroupBox label="Versions" style={{ marginBottom: 16 }}>
+              <GroupBox label="Software versions" style={{ marginBottom: 16 }}>
                 <table style={{ width: '100%' }}>
                   <tbody>
-                    <tr>
-                      <td style={{ padding: '2px 0' }}>SQLite</td>
-                      <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                        {systemInfo.sqlite}
-                      </td>
-                    </tr>
                     <tr>
                       <td style={{ padding: '2px 0' }}>Bun</td>
                       <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
                         {systemInfo.bun}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '2px 0' }}>SQLite</td>
+                      <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                        {systemInfo.sqlite}
                       </td>
                     </tr>
                   </tbody>
@@ -96,27 +96,15 @@ export function Desktop() {
                 <table style={{ width: '100%' }}>
                   <tbody>
                     <tr>
-                      <td style={{ padding: '2px 0' }}>Time</td>
-                      <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                        {systemInfo.datetime}
-                      </td>
-                    </tr>
-                    <tr>
                       <td style={{ padding: '2px 0' }}>Uptime</td>
                       <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
                         {systemInfo.uptime}
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ padding: '2px 0' }}>Platform</td>
+                      <td style={{ padding: '2px 0' }}>Time</td>
                       <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                        {systemInfo.platform}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '2px 0' }}>Architecture</td>
-                      <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                        {systemInfo.arch}
+                        {systemInfo.datetime}
                       </td>
                     </tr>
                   </tbody>
@@ -125,25 +113,25 @@ export function Desktop() {
 
               <Space vertical size={0.5} />
 
-              <GroupBox label="Resources" style={{ marginBottom: 16 }}>
+              <GroupBox label="Hardware" style={{ marginBottom: 16 }}>
                 <table style={{ width: '100%' }}>
                   <tbody>
                     <tr>
-                      <td style={{ padding: '2px 0' }}>CPUs</td>
+                      <td style={{ padding: '2px 0' }}>CPU cores</td>
                       <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
                         {systemInfo.cpus}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td style={{ padding: '2px 0' }}>Load average</td>
-                      <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
-                        {systemInfo.loadAvg}
                       </td>
                     </tr>
                     <tr>
                       <td style={{ padding: '2px 0' }}>Memory</td>
                       <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
                         {systemInfo.memory}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: '2px 0' }}>Platform</td>
+                      <td style={{ textAlign: 'right', fontWeight: 'bold' }}>
+                        {systemInfo.platform} / {systemInfo.arch}
                       </td>
                     </tr>
                   </tbody>

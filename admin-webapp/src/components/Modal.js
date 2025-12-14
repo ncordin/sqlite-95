@@ -103,7 +103,7 @@ export function Modal() {
 }
 
 // Export pour le cas où on veut utiliser ContentModal en standalone (sans context)
-export function ContentModal({ title, children, onClose }) {
+export function ContentModal({ title, children, onClose, width = undefined }) {
   return (
     <>
       <Overlay onClick={onClose} />
@@ -111,7 +111,7 @@ export function ContentModal({ title, children, onClose }) {
         <ClosableWindow
           title={title}
           onClose={onClose}
-          style={{ width: 500, maxWidth: '90vw' }}
+          style={{ width: width || 500, maxWidth: '90vw' }}
           active
         >
           {children}

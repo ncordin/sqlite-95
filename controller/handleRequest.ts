@@ -10,6 +10,7 @@ import {
   useIndex,
   displayPath,
 } from './utils';
+import { recordRequest } from './monitoring';
 
 const ENTRY_PATH = dirname(Bun.main);
 const ROOT_PATH = cwd();
@@ -32,6 +33,8 @@ export const handleRequest = async (
   request: Request,
   options: HandleRequestOptions
 ) => {
+  recordRequest();
+
   const makePrefix = (subPrefix: string | undefined) =>
     joinPrefix(options.prefix || '', subPrefix || '');
 

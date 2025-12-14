@@ -31,3 +31,24 @@ Fonctionnalités Manquantes pour une Administration SQLite Complète
 
 - Support des BOOLEAN (checkbox dans les formulaires)
 - Support des ENUM (dropdown)
+
+```
+fetch(req, server) {
+    const address = server.requestIP(req);
+    if (address) {
+      return new Response(`Client IP: ${address.address}, Port: ${address.port}`);
+    }
+```
+
+`${server.pendingRequests}`
+
+15. Dashboard :
+
+- Pending requests
+- Active clients (by IP)
+- AVG request duration + P90
+- SQL Queries on last minute / hour
+- Requests on last minute / hour
+- Requests total count from {start_date}:
+- List all endpoints : name - count - duration
+- Last 100 API calls : name - IP - duration - status

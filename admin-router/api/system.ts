@@ -27,10 +27,7 @@ const controller: Controller = () => {
   };
   db.close();
 
-  const loadAvg = os.loadavg();
   const totalMem = os.totalmem();
-  const freeMem = os.freemem();
-  const usedMem = totalMem - freeMem;
 
   return {
     sqlite: result.version,
@@ -39,8 +36,7 @@ const controller: Controller = () => {
     platform: `${os.type()} ${os.release()}`,
     arch: os.arch(),
     cpus: os.cpus().length,
-    loadAvg: loadAvg.map((l) => l.toFixed(2)).join(', '),
-    memory: `${formatMemory(usedMem)} / ${formatMemory(totalMem)}`,
+    memory: formatMemory(totalMem),
     uptime: formatUptime(os.uptime()),
   };
 };
