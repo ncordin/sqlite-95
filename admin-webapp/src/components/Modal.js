@@ -1,50 +1,7 @@
 import React from 'react';
-import styled from 'styled-components';
 import { Button } from 'react95';
 import { ClosableWindow } from './ClosableWindow';
 import { useModal } from '../contexts/Modal';
-
-const Overlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 999;
-`;
-
-const Container = styled.div`
-  position: fixed;
-  top: 40%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  z-index: 1000;
-`;
-
-const Content = styled.div`
-  padding: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-`;
-
-const MessageRow = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const Icon = styled.span`
-  display: inline-block;
-  font-size: 2rem;
-  margin-right: 1rem;
-`;
-
-const ButtonRow = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-`;
 
 const ICONS = {
   error: '❌',
@@ -68,8 +25,27 @@ export function Modal() {
 
   return (
     <>
-      <Overlay onClick={handleClose} />
-      <Container>
+      <div
+        onClick={handleClose}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.3)',
+          zIndex: 999,
+        }}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          top: '40%',
+          left: '50%',
+          transform: 'translateX(-50%) translateY(-50%)',
+          zIndex: 1000,
+        }}
+      >
         <ClosableWindow
           title={title}
           onClose={handleClose}
@@ -79,12 +55,31 @@ export function Modal() {
           {isContentModal ? (
             content
           ) : (
-            <Content>
-              <MessageRow>
-                {icon && <Icon>{icon}</Icon>}
+            <div
+              style={{
+                padding: 8,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 16,
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                {icon && (
+                  <span
+                    style={{
+                      display: 'inline-block',
+                      fontSize: '2rem',
+                      marginRight: '1rem',
+                    }}
+                  >
+                    {icon}
+                  </span>
+                )}
                 {message}
-              </MessageRow>
-              <ButtonRow>
+              </div>
+              <div
+                style={{ display: 'flex', justifyContent: 'center', gap: 8 }}
+              >
                 <Button onClick={handleConfirm} style={{ width: 80 }}>
                   OK
                 </Button>
@@ -93,21 +88,46 @@ export function Modal() {
                     Cancel
                   </Button>
                 )}
-              </ButtonRow>
-            </Content>
+              </div>
+            </div>
           )}
         </ClosableWindow>
-      </Container>
+      </div>
     </>
   );
 }
 
 // Export pour le cas où on veut utiliser ContentModal en standalone (sans context)
-export function ContentModal({ title, children, onClose, width = undefined }) {
+export function ContentModal({
+  title,
+  children,
+  onClose,
+  width = undefined,
+  fixedTop = undefined,
+}) {
   return (
     <>
-      <Overlay onClick={onClose} />
-      <Container>
+      <div
+        onClick={onClose}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(0, 0, 0, 0.3)',
+          zIndex: 999,
+        }}
+      />
+      <div
+        style={{
+          position: 'fixed',
+          top: fixedTop || '40%',
+          left: '50%',
+          transform: `translateX(-50%)${fixedTop ? '' : ' translateY(-50%)'}`,
+          zIndex: 1000,
+        }}
+      >
         <ClosableWindow
           title={title}
           onClose={onClose}
@@ -116,7 +136,7 @@ export function ContentModal({ title, children, onClose, width = undefined }) {
         >
           {children}
         </ClosableWindow>
-      </Container>
+      </div>
     </>
   );
 }
