@@ -1,4 +1,4 @@
-import { BunFile } from 'bun';
+import { BunFile, Server } from 'bun';
 import { CORS_HEADERS } from './cors';
 import { read } from './read';
 import {
@@ -22,6 +22,7 @@ function parseCookie(cookie: string) {
 export async function callController(
   filePath: string,
   request: Request,
+  server: Server,
   middleware: Middleware | undefined
 ) {
   const controllerModule = await import(filePath);
@@ -65,6 +66,7 @@ export async function callController(
     query,
     method: request.method as Method,
     headers: request.headers.toJSON(),
+    requestIP: () => server?.requestIP(request) || null,
     read: (
       from: 'query' | 'body' | 'cookie',
       name: string,

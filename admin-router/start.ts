@@ -13,8 +13,8 @@ const SERVER_OPTIONS = {
 
 const server = Bun.serve({
   port,
-  async fetch(request) {
-    return handleRequest(request, SERVER_OPTIONS);
+  async fetch(request, server) {
+    return handleRequest(request, server, SERVER_OPTIONS);
   },
 });
 

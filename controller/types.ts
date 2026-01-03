@@ -1,4 +1,4 @@
-import { BunFile } from 'bun';
+import { BunFile, SocketAddress } from 'bun';
 
 export type HandleRequestOptions = {
   prefix?: string;
@@ -78,6 +78,7 @@ type ControllerRequest = {
   method: Method;
   headers: Headers;
   read: typeof read;
+  requestIP: () => SocketAddress | null;
 };
 
 export type ContentType = 'json' | 'html' | 'text' | 'file';

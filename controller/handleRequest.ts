@@ -11,6 +11,7 @@ import {
   displayPath,
 } from './utils';
 import { recordRequest } from './monitoring';
+import { Server } from 'bun';
 
 const ENTRY_PATH = dirname(Bun.main);
 const ROOT_PATH = cwd();
@@ -31,6 +32,7 @@ export const getUrlsFromOptions = (options: HandleRequestOptions) => {
 
 export const handleRequest = async (
   request: Request,
+  server: Server,
   options: HandleRequestOptions
 ) => {
   recordRequest();
@@ -61,7 +63,7 @@ export const handleRequest = async (
       ) {
         // TODO: the admin logic could be a middleware!
         const routeFile = join(LIB_PATH, '/admin-router', `${shortPath}.ts`);
-        return callController(routeFile, request, undefined);
+        return callController(routeFile, request, server, undefined);
       } else {
         return new Response(
           JSON.stringify({
@@ -108,6 +110,7 @@ export const handleRequest = async (
       return callController(
         controllerFile,
         request,
+        server,
         options.controllers.middleware
       );
     }
@@ -120,6 +123,7 @@ export const handleRequest = async (
     return callController(
       controllerFile,
       request,
+      server,
       options.controllers?.middleware
     );
   }
