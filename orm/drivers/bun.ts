@@ -1,5 +1,4 @@
 import { Database } from 'bun:sqlite';
-import { readFileSync } from 'fs';
 
 import { Fields } from '../fields/declaration';
 import { getAndFlushParameters } from '../fields/encode';
@@ -20,19 +19,6 @@ type QueryOptions = {
   recursive?: boolean;
 };
 
-function getPackageVersion() {
-  try {
-    const root = __dirname.replace('/orm/drivers', '');
-    const packageJsonFileRelativeToBuildPosition = `${root}/package.json`;
-    const content = readFileSync(packageJsonFileRelativeToBuildPosition);
-    const matches = content.toString().match(/"version": "(\d\.\d\.\d)",/);
-
-    return matches ? matches[1] : '?';
-  } catch (error) {
-    return '?';
-  }
-}
-
 export const initDatabase = function (config: DatabaseConfiguration) {
   database = new Database(config.file);
 
@@ -40,10 +26,7 @@ export const initDatabase = function (config: DatabaseConfiguration) {
     .query<{ version: string }, null>('SELECT sqlite_version() AS version;')
     .all(null);
 
-  console.log('');
-  console.log(`💾 SQLite 95 version ${getPackageVersion()}`);
-  console.log(`• Using: ${config.file}`);
-  console.log(`• SQLite version ${version}\n`);
+  return { version };
 };
 
 export const queryGet = ({

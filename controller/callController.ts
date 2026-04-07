@@ -28,6 +28,7 @@ export async function callController(
   const controllerModule = await import(filePath);
 
   if (typeof controllerModule.default !== 'function') {
+    console.log(`⚠️ Invalid controller module!`);
     return new Response('Controller function must be default export.', {
       status: 500,
     });
@@ -77,8 +78,8 @@ export async function callController(
         from === 'query'
           ? query
           : from === 'body'
-          ? body
-          : parseCookie(request.headers.get('cookie') ?? '');
+            ? body
+            : parseCookie(request.headers.get('cookie') ?? '');
       const value = (source || {})[name];
 
       if (type === 'file') {

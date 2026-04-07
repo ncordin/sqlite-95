@@ -13,4 +13,4 @@ export type { Middleware };
 // End of fix.
 
 export { initDatabase, Table } from './orm';
-export { getUrlsFromOptions, handleRequest } from './controller';
+export { handleRequest, initialize } from './controller';

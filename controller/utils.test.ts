@@ -1,5 +1,5 @@
 import { expect, test } from 'bun:test';
-import { joinPrefix } from './utils';
+import { joinPrefix } from './utils/http';
 
 test('join empty prefixes', () => {
   expect(joinPrefix('', '')).toBe('/');

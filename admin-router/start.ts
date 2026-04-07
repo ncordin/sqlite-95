@@ -1,30 +1,22 @@
-import { handleRequest } from '..';
+import { handleRequest, initialize } from '..';
 
-const port = 8080;
-const prefix = '/';
 const password = '1234';
 
 const SERVER_OPTIONS = {
+  port: 8080,
   admin: {
-    prefix,
+    prefix: '/',
     password,
   },
 };
 
-const server = Bun.serve({
-  port,
+Bun.serve({
+  port: SERVER_OPTIONS.port,
   async fetch(request, server) {
     return handleRequest(request, server, SERVER_OPTIONS);
   },
 });
 
-console.log('');
-console.log(`SQLite 95 local admin ready! ✨`);
-console.log('');
-console.log(`http://${server.hostname}:${port}${prefix}`);
-
-console.log('');
-
-console.log(`🔑 Admin password: ${password}`);
-
+initialize(SERVER_OPTIONS);
+console.log(`  🔑  Admin password: ${password}`);
 console.log('');
