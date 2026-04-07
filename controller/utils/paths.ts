@@ -1,8 +1,6 @@
-import { dirname, join } from 'node:path';
+import { join } from 'node:path';
 import { HandleRequestOptions } from '../types';
 import { joinPrefix } from './http';
-
-const ENTRY_PATH = dirname(Bun.main); // TODO: use meta instead
 
 export const resolvePaths = (options: HandleRequestOptions) => ({
   // Front prefixes:
@@ -12,12 +10,12 @@ export const resolvePaths = (options: HandleRequestOptions) => ({
 
   // Back directories :
   controllersDirectory: options.controllers
-    ? join(ENTRY_PATH, options.controllers.path)
+    ? join(options.root, options.controllers.path)
     : undefined,
   assetsDirectory: options.assets
-    ? join(ENTRY_PATH, options.assets.path)
+    ? join(options.root, options.assets.path)
     : undefined,
   catchAllFile: options.catchAll
-    ? join(ENTRY_PATH, options.catchAll.path)
+    ? join(options.root, options.catchAll.path)
     : undefined,
 });

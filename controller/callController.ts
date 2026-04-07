@@ -57,7 +57,7 @@ export async function callController(
   // All other request use JSON:
   else {
     const bodyText = await request.text();
-    body = bodyText ? JSON.parse(bodyText) : {};
+    body = bodyText ? JSON.parse(bodyText) : {}; // TODO pkoi pas de try ?
   }
 
   const controllerRequest = {

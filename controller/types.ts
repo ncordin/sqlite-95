@@ -1,6 +1,7 @@
 import { BunFile, SocketAddress } from 'bun';
 
 export type HandleRequestOptions = {
+  root: string;
   port: number;
   prefix?: string;
   database?: {
