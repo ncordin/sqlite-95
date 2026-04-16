@@ -1,14 +1,33 @@
-const injectParameters = (sql: string, parameters: string[]) => {
+import { QueryOption } from '../types';
+
+const MAX_PARAM_LENGTH = 50;
+
+const injectParameters = (
+  sql: string,
+  parameters: string[],
+  short: boolean
+) => {
   const sqlSplit = sql.split('?');
   let sqlCool = sqlSplit[0];
 
   parameters.forEach((parameter, index) => {
-    sqlCool += `'${parameter}'` + sqlSplit[index + 1];
+    const display =
+      short && parameter.length > MAX_PARAM_LENGTH ? '📦' : `'${parameter}'`;
+    sqlCool += display + sqlSplit[index + 1];
   });
 
   return sqlCool;
 };
 
-export const logQuery = (sql: string, parameters: string[]) => {
-  console.log(`⚡ ${injectParameters(sql, parameters)}`);
+export const logQuery = (
+  sql: string,
+  parameters: string[],
+  options: QueryOption[]
+) => {
+  const short = options?.includes('short-log') ?? false;
+  const silent = options?.includes('no-log') ?? false;
+
+  if (!silent) {
+    console.log(`⚡ ${injectParameters(sql, parameters, short)}`);
+  }
 };

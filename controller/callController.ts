@@ -22,7 +22,7 @@ function parseCookie(cookie: string) {
 export async function callController(
   filePath: string,
   request: Request,
-  server: Server,
+  server: Server<undefined>,
   middleware: Middleware | undefined
 ) {
   const controllerModule = await import(filePath);
@@ -80,7 +80,7 @@ export async function callController(
           : from === 'body'
             ? body
             : parseCookie(request.headers.get('cookie') ?? '');
-      const value = (source || {})[name];
+      const value = ((source as Record<string, unknown>) || {})[name];
 
       if (type === 'file') {
         return value instanceof File ? value : defaultValue;

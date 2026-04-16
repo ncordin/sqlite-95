@@ -12,6 +12,7 @@ test('queryGet returns the answer', () => {
       parameters: [],
       name: 'fakeTable',
       fields: {},
+      options: [],
     })
   ).toEqual([
     {
@@ -27,6 +28,7 @@ test('queryRun returns affected rows', () => {
       parameters: [],
       name: 'fakeTable',
       fields: {},
+      options: [],
     })
   ).toEqual({ affectedRows: 0 });
 });

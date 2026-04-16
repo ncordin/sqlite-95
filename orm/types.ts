@@ -46,6 +46,8 @@ export type WriteResult = {
   affectedRows: number;
 };
 
+export type QueryOption = 'no-log' | 'short-log';
+
 export type Insertable<TableType> = {
   [Name in keyof Omit<TableType, 'id'>]: TableType[Name] | RawSQL;
 };

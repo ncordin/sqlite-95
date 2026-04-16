@@ -16,7 +16,7 @@ const LIB_PATH = IS_ADMIN
 
 export const handleRequest = async (
   request: Request,
-  server: Server,
+  server: Server<undefined>,
   options: HandleRequestOptions
 ) => {
   recordRequest();

@@ -4,6 +4,7 @@ import { Fields } from '../fields/declaration';
 import { getAndFlushParameters } from '../fields/encode';
 import { makeCreateTable } from '../table/queryBuilder';
 import { DatabaseConfiguration, RawRow, WriteResult } from '../types';
+import type { QueryOption } from '../types';
 import { getError } from '../utils/error';
 import { logQuery } from '../utils/logger';
 
@@ -16,6 +17,7 @@ type QueryOptions = {
   parameters: string[];
   name: string;
   fields: Fields;
+  options: QueryOption[];
   recursive?: boolean;
 };
 
@@ -34,9 +36,10 @@ export const queryGet = ({
   parameters,
   name,
   fields,
+  options,
   recursive,
 }: QueryOptions): RawRow[] => {
-  logQuery(sql, parameters);
+  logQuery(sql, parameters, options);
 
   if (!database) {
     throw new Error('Query failed, connection is not ready. ' + sql);
@@ -51,10 +54,17 @@ export const queryGet = ({
       const createTable = makeCreateTable(name, fields);
       const createTableParameters = getAndFlushParameters();
 
-      logQuery(createTable, createTableParameters);
+      logQuery(createTable, createTableParameters, options);
       database.query(createTable).run(...createTableParameters);
 
-      return queryGet({ sql, parameters, name, fields, recursive: true });
+      return queryGet({
+        sql,
+        parameters,
+        name,
+        fields,
+        options,
+        recursive: true,
+      });
     }
 
     throw new Error(error.message);
@@ -67,8 +77,9 @@ export const queryRun = ({
   name,
   fields,
   recursive,
+  options,
 }: QueryOptions): WriteResult => {
-  logQuery(sql, parameters);
+  logQuery(sql, parameters, options);
 
   if (!database) {
     throw new Error('Query failed, connection is not ready. ' + sql);
@@ -91,10 +102,17 @@ export const queryRun = ({
       const createTable = makeCreateTable(name, fields);
       const createTableParameters = getAndFlushParameters();
 
-      logQuery(createTable, createTableParameters);
+      logQuery(createTable, createTableParameters, options);
       database.query(createTable).run(...createTableParameters);
 
-      return queryRun({ sql, parameters, name, fields, recursive: true });
+      return queryRun({
+        sql,
+        parameters,
+        name,
+        fields,
+        options,
+        recursive: true,
+      });
     }
 
     throw new Error(error.message);
