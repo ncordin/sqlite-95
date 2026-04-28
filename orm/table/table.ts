@@ -23,6 +23,10 @@ type DeclarationOptions = {
   fields: Fields;
 };
 
+type NumberFieldName<TableType> = {
+  [Field in keyof TableType]: TableType[Field] extends number ? Field : never;
+}[keyof TableType];
+
 export type TableInstance<TableType> = {
   // Internal states:
   sets: Array<Set>;
@@ -37,6 +41,10 @@ export type TableInstance<TableType> = {
   set: <Field extends keyof TableType>(
     fieldName: Field,
     value: TableType[Field] | RawSQL
+  ) => TableInstance<TableType>;
+  increment: <Field extends NumberFieldName<TableType>>(
+    fieldName: Field,
+    value: number
   ) => TableInstance<TableType>;
   where: <Field extends keyof TableType>(
     fieldName: Field,
@@ -89,6 +97,18 @@ export const declareTable = <TableType>({
       value: value as Value,
     };
     this.sets.push(newSet);
+    return this;
+  },
+
+  /**
+   * Increment
+   */
+  increment: function (fieldName, value) {
+    const escapedField = encodeName(String(fieldName));
+    this.sets.push({
+      fieldName: String(fieldName),
+      value: { _SQL: `${escapedField} + ${value}` },
+    });
     return this;
   },
 
