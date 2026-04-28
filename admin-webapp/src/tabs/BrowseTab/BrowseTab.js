@@ -35,25 +35,29 @@ export function BrowseTab() {
   const [selected, setSelected] = useState([]);
 
   useEffect(() => {
-    if (!rowid) {
-      currentTable &&
-        execute(`SELECT rowid, * FROM \`${currentTable.name}\` LIMIT 100;`);
-      setOrderBy(null);
-      setOrderByDirection(null);
+    if (!rowid && currentTable) {
+      const stored = localStorage.getItem(`browseOrderBy:${currentTable.name}`);
+      let field = null;
+      let direction = true;
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          field = parsed.field;
+          direction = parsed.direction;
+        } catch {}
+      }
+      setOrderBy(field);
+      setOrderByDirection(direction);
       setSelected([]);
-    }
-  }, [currentTable, rowid]);
 
-  useEffect(() => {
-    if (currentTable && orderBy) {
-      const orderCommand = `\`${orderBy}\` ${
-        orderByDirection ? 'ASC' : 'DESC'
-      }`;
-      const query = `SELECT rowid, * FROM \`${currentTable.name}\` ORDER BY ${orderCommand} LIMIT 100;`;
-
+      const query = field
+        ? `SELECT rowid, * FROM \`${currentTable.name}\` ORDER BY \`${field}\` ${
+            direction ? 'ASC' : 'DESC'
+          } LIMIT 100;`
+        : `SELECT rowid, * FROM \`${currentTable.name}\` LIMIT 100;`;
       execute(query);
     }
-  }, [orderBy, orderByDirection]);
+  }, [currentTable, rowid]);
 
   const execute = async (value) => {
     setValue(value);
@@ -63,8 +67,18 @@ export function BrowseTab() {
   };
 
   const changeOrderBy = (field) => {
-    field === orderBy && setOrderByDirection(!orderByDirection);
+    const newDirection = field === orderBy ? !orderByDirection : orderByDirection;
     setOrderBy(field);
+    setOrderByDirection(newDirection);
+
+    localStorage.setItem(
+      `browseOrderBy:${currentTable.name}`,
+      JSON.stringify({ field, direction: newDirection })
+    );
+    const query = `SELECT rowid, * FROM \`${currentTable.name}\` ORDER BY \`${field}\` ${
+      newDirection ? 'ASC' : 'DESC'
+    } LIMIT 100;`;
+    execute(query);
   };
 
   const deleteSelected = async () => {
