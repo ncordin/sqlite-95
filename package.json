@@ -19,7 +19,7 @@
   "license": "MIT",
   "scripts": {
     "start": "bun --watch admin-router/start.ts",
-    "test": "bun orm/tests/players.test.ts",
+    "test": "bun test",
     "build:admin": "cd admin-webapp && bun run build",
     "prepublish": "bun run build:admin"
   },

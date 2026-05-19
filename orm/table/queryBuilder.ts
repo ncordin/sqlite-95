@@ -33,7 +33,11 @@ const escapeOperator = (
   return operator;
 };
 
-export function makeWhere(name: string, fields: Fields, conditions: Where[]) {
+export function makeWhere(
+  fields: Fields,
+  conditions: ReadonlyArray<Where>,
+  parameters: string[]
+) {
   if (Object.keys(conditions).length === 0) {
     return '1 = 1';
   }
@@ -46,12 +50,12 @@ export function makeWhere(name: string, fields: Fields, conditions: Where[]) {
 
       if (values.length) {
         const inValues = values
-          .map((singleValue) => encode(singleValue, fields[fieldName]))
+          .map((singleValue) => encode(singleValue, fields[fieldName], parameters))
           .join(', ');
 
         escapedValue = `(${inValues})`;
       } else {
-        escapedValue = encode(value, fields[fieldName]);
+        escapedValue = encode(value, fields[fieldName], parameters);
       }
 
       return `${escapedField} ${escapedOperator} ${escapedValue}`;
@@ -59,7 +63,7 @@ export function makeWhere(name: string, fields: Fields, conditions: Where[]) {
     .join(' AND ');
 }
 
-export function makeOrders(name: string, fields: Fields, orders: OrderBy[]) {
+export function makeOrders(orders: ReadonlyArray<OrderBy>) {
   if (Object.keys(orders).length === 0) {
     return '';
   }
@@ -77,7 +81,7 @@ export function makeOrders(name: string, fields: Fields, orders: OrderBy[]) {
   );
 }
 
-export function makeLimit(name: string, fields: Fields, limit: Limit | null) {
+export function makeLimit(limit: Limit | null) {
   if (limit === null) {
     return '';
   }
@@ -89,10 +93,14 @@ export function makeLimit(name: string, fields: Fields, limit: Limit | null) {
   return ` LIMIT ${limit.quantity} OFFSET ${limit.position}`;
 }
 
-export function makeSet(name: string, fields: Fields, data: Set[]) {
+export function makeSet(
+  fields: Fields,
+  data: ReadonlyArray<Set>,
+  parameters: string[]
+) {
   return data
     .map(({ fieldName, value }) => {
-      const escaped = encode(value, fields[fieldName]);
+      const escaped = encode(value, fields[fieldName], parameters);
 
       return `${encodeName(fieldName)} = ${escaped}`;
     })
@@ -119,7 +127,7 @@ function makeField(name: string, field: AnyField) {
   }
 
   if (field.default !== null) {
-    sql = `${sql} DEFAULT ${encode(field.default, field, false)}`;
+    sql = `${sql} DEFAULT ${encode(field.default, field, [], false)}`;
   }
 
   return sql;

@@ -22,7 +22,7 @@ const injectParameters = (
 export const logQuery = (
   sql: string,
   parameters: string[],
-  options: QueryOption[]
+  options: ReadonlyArray<QueryOption>
 ) => {
   const short = options?.includes('short-log') ?? false;
   const silent = options?.includes('no-log') ?? false;

@@ -18,23 +18,10 @@ const convertToSqlDate = (date: Date) => {
   return `${parts[0]}-${parts[1]}-${parts[2]} ${parts[3]}:${parts[4]}:${parts[5]}`;
 };
 
-let currentParameters: string[] = [];
-
-export const addParameters = (value: string) => {
-  currentParameters.push(value);
-};
-
-export const getAndFlushParameters = () => {
-  const parameters = currentParameters;
-
-  currentParameters = [];
-
-  return parameters;
-};
-
 export const encode = (
   value: Value,
   field: AnyField,
+  parameters: string[],
   useEscaper = true
 ): string => {
   if (value === null) {
@@ -62,7 +49,7 @@ export const encode = (
 
     case 'string':
       if (useEscaper) {
-        addParameters((value as string).slice(0, field.maxLength)); // BUG ! (example null)
+        parameters.push((value as string).slice(0, field.maxLength)); // BUG ! (example null)
         return '?';
       } else {
         return quotify(`${value}`, '"');

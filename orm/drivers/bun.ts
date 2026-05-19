@@ -1,7 +1,6 @@
 import { Database } from 'bun:sqlite';
 
 import { Fields } from '../fields/declaration';
-import { getAndFlushParameters } from '../fields/encode';
 import { makeCreateTable } from '../table/queryBuilder';
 import { DatabaseConfiguration, RawRow, WriteResult } from '../types';
 import type { QueryOption } from '../types';
@@ -17,7 +16,7 @@ type QueryOptions = {
   parameters: string[];
   name: string;
   fields: Fields;
-  options: QueryOption[];
+  options: ReadonlyArray<QueryOption>;
   recursive?: boolean;
 };
 
@@ -52,10 +51,9 @@ export const queryGet = ({
 
     if (error.message.startsWith(NO_SUCH_TABLE) && !recursive) {
       const createTable = makeCreateTable(name, fields);
-      const createTableParameters = getAndFlushParameters();
 
-      logQuery(createTable, createTableParameters, options);
-      database.query(createTable).run(...createTableParameters);
+      logQuery(createTable, [], options);
+      database.query(createTable).run();
 
       return queryGet({
         sql,
@@ -100,10 +98,9 @@ export const queryRun = ({
 
     if (error.message.startsWith(NO_SUCH_TABLE) && !recursive) {
       const createTable = makeCreateTable(name, fields);
-      const createTableParameters = getAndFlushParameters();
 
-      logQuery(createTable, createTableParameters, options);
-      database.query(createTable).run(...createTableParameters);
+      logQuery(createTable, [], options);
+      database.query(createTable).run();
 
       return queryRun({
         sql,

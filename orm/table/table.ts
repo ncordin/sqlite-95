@@ -14,7 +14,7 @@ import {
   WriteResult,
 } from '../types';
 import { Fields } from '../fields/declaration';
-import { encode, encodeName, getAndFlushParameters } from '../fields/encode';
+import { encode, encodeName } from '../fields/encode';
 import { decodeRaws } from '../fields/decode';
 import { getError } from '../utils/error';
 
@@ -24,17 +24,18 @@ type DeclarationOptions = {
 };
 
 type NumberFieldName<TableType> = {
-  [Field in keyof TableType]: TableType[Field] extends number ? Field : never;
+  [Field in keyof TableType]: TableType[Field] extends number | null
+    ? Field
+    : never;
 }[keyof TableType];
 
 export type TableInstance<TableType> = {
-  // Internal states:
-  sets: Array<Set>;
-  wheres: Array<Where>;
-  orders: Array<OrderBy>;
-  limitState: Limit | null;
-  options: Array<QueryOption>;
-  clearState: () => void;
+  // Internal states (read-only — each builder is immutable):
+  readonly sets: ReadonlyArray<Set>;
+  readonly wheres: ReadonlyArray<Where>;
+  readonly orders: ReadonlyArray<OrderBy>;
+  readonly limitState: Limit | null;
+  readonly options: ReadonlyArray<QueryOption>;
 
   // Setters:
   option: (optionName: QueryOption) => TableInstance<TableType>;
@@ -70,247 +71,310 @@ export type TableInstance<TableType> = {
   update: () => WriteResult;
   count: () => number;
   rawSql: (sql: string) => RawSQL;
-  rawQuery: (sql: string, mode: 'read') => RawRow[];
+  rawQuery: (sql: string, mode: 'read' | 'write') => RawRow[];
+
+  // Introspection — returns the SQL the builder would run, with parameters
+  // inlined. For debugging and tests, not for execution. Default is the
+  // SELECT form (used by `findAll`); pass a kind to inspect a different
+  // operation built on the same state.
+  toSQL: (kind?: 'find' | 'count' | 'update' | 'remove') => string;
 };
 
-export const declareTable = <TableType>({
-  name,
-  fields,
-}: DeclarationOptions): TableInstance<TableType> => ({
+const inlineParameters = (sql: string, parameters: string[]): string => {
+  const parts = sql.split('?');
+  return parameters.reduce(
+    (acc, param, index) => acc + `'${param}'` + parts[index + 1],
+    parts[0]
+  );
+};
+
+type BuilderState = {
+  sets: ReadonlyArray<Set>;
+  wheres: ReadonlyArray<Where>;
+  orders: ReadonlyArray<OrderBy>;
+  limitState: Limit | null;
+  options: ReadonlyArray<QueryOption>;
+};
+
+const EMPTY_STATE: BuilderState = {
   sets: [],
   wheres: [],
   orders: [],
   limitState: null,
   options: [],
+};
 
-  option: function (optionName) {
-    this.options.push(optionName);
-    return this;
-  },
+function createBuilder<TableType>(
+  name: string,
+  fields: Fields,
+  state: BuilderState
+): TableInstance<TableType> {
+  const { sets, wheres, orders, limitState, options } = state;
 
-  /**
-   * Set
-   */
-  set: function (fieldName, value) {
-    const newSet: Set = {
-      fieldName: String(fieldName),
-      value: value as Value,
-    };
-    this.sets.push(newSet);
-    return this;
-  },
+  const next = (patch: Partial<BuilderState>): TableInstance<TableType> =>
+    createBuilder<TableType>(name, fields, { ...state, ...patch });
 
-  /**
-   * Increment
-   */
-  increment: function (fieldName, value) {
-    const escapedField = encodeName(String(fieldName));
-    this.sets.push({
-      fieldName: String(fieldName),
-      value: { _SQL: `${escapedField} + ${value}` },
-    });
-    return this;
-  },
+  const insertFn = (data: Insertable<TableType>): WriteResult => {
+    const parameters: string[] = [];
 
-  /**
-   * Where
-   */
-  where: function (fieldName, comparison, value) {
-    const newWhere: Where = {
-      fieldName: String(fieldName),
-      comparison,
-      value: value as Value,
-      values: [],
-    };
-    this.wheres.push(newWhere);
-    return this;
-  },
-
-  /**
-   * In
-   */
-  in: function (fieldName, values) {
-    const newWhere: Where = {
-      fieldName: String(fieldName),
-      comparison: '=',
-      value: null,
-      values: values as Value[],
-    };
-    this.wheres.push(newWhere);
-    return this;
-  },
-
-  /**
-   * Order By
-   */
-  orderBy: function (fieldName, direction) {
-    this.orders.push({
-      fieldName: String(fieldName),
-      direction,
-    });
-
-    return this;
-  },
-
-  /**
-   * Limit
-   */
-  limit: function (quantity, position) {
-    this.limitState = { quantity, position };
-
-    return this;
-  },
-
-  /**
-   * FindAll
-   */
-  findAll: function () {
-    const condition = makeWhere(name, fields, this.wheres);
-    const orders = makeOrders(name, fields, this.orders);
-    const limit = makeLimit(name, fields, this.limitState);
-
-    const sql = `SELECT * FROM ${encodeName(
-      name
-    )} WHERE ${condition}${orders}${limit};`;
-    const parameters = getAndFlushParameters();
-
-    const options = this.options;
-    this.clearState();
-
-    const rows = queryGet({ sql, parameters, name, fields, options });
-
-    return decodeRaws<TableType>(rows, fields);
-  },
-
-  /**
-   * FindOne
-   */
-  findOne: function () {
-    const rows = this.limit(1).findAll();
-
-    return rows.length ? rows[0] : null;
-  },
-
-  /**
-   * Insert
-   */
-  insert: function (data: Insertable<TableType>) {
     const fieldNames = Object.keys(data)
       .map((field) => encodeName(field))
       .join(', ');
 
     const values = Object.entries(data)
-      .map(([field, value]) => encode(value as Value, fields[field]))
+      .map(([field, value]) => encode(value as Value, fields[field], parameters))
       .join(', ');
 
     const sql = `INSERT INTO ${encodeName(
       name
     )} (${fieldNames}) VALUES (${values});`;
 
-    const parameters = getAndFlushParameters();
-    const options = this.options;
-    this.clearState();
     return queryRun({ sql, parameters, name, fields, options });
-  },
+  };
 
-  insertIfPossible: function (data: Insertable<TableType>) {
-    try {
-      return this.insert(data);
-    } catch (e) {
-      const error = getError(e);
+  return {
+    sets,
+    wheres,
+    orders,
+    limitState,
+    options,
 
-      if (error.message.startsWith('UNIQUE constraint failed')) {
-        return { affectedRows: 0 };
+    option: (optionName) => next({ options: [...options, optionName] }),
+
+    /**
+     * Set
+     */
+    set: (fieldName, value) =>
+      next({
+        sets: [
+          ...sets,
+          { fieldName: String(fieldName), value: value as Value },
+        ],
+      }),
+
+    /**
+     * Increment
+     */
+    increment: (fieldName, value) => {
+      const escapedField = encodeName(String(fieldName));
+      return next({
+        sets: [
+          ...sets,
+          {
+            fieldName: String(fieldName),
+            value: { _SQL: `${escapedField} + ${value}` },
+          },
+        ],
+      });
+    },
+
+    /**
+     * Where
+     */
+    where: (fieldName, comparison, value) =>
+      next({
+        wheres: [
+          ...wheres,
+          {
+            fieldName: String(fieldName),
+            comparison,
+            value: value as Value,
+            values: [],
+          },
+        ],
+      }),
+
+    /**
+     * In
+     */
+    in: (fieldName, values) =>
+      next({
+        wheres: [
+          ...wheres,
+          {
+            fieldName: String(fieldName),
+            comparison: '=',
+            value: null,
+            values: values as Value[],
+          },
+        ],
+      }),
+
+    /**
+     * Order By
+     */
+    orderBy: (fieldName, direction) =>
+      next({
+        orders: [...orders, { fieldName: String(fieldName), direction }],
+      }),
+
+    /**
+     * Limit
+     */
+    limit: (quantity, position) =>
+      next({ limitState: { quantity, position } }),
+
+    /**
+     * FindAll
+     */
+    findAll: () => {
+      const parameters: string[] = [];
+      const condition = makeWhere(fields, wheres, parameters);
+      const ordersSql = makeOrders(orders);
+      const limit = makeLimit(limitState);
+
+      const sql = `SELECT * FROM ${encodeName(
+        name
+      )} WHERE ${condition}${ordersSql}${limit};`;
+
+      const rows = queryGet({ sql, parameters, name, fields, options });
+
+      return decodeRaws<TableType>(rows, fields);
+    },
+
+    /**
+     * FindOne
+     */
+    findOne: () => {
+      const limited = createBuilder<TableType>(name, fields, {
+        ...state,
+        limitState: { quantity: 1 },
+      });
+      const rows = limited.findAll();
+
+      return rows.length ? rows[0] : null;
+    },
+
+    /**
+     * Insert
+     */
+    insert: insertFn,
+
+    insertIfPossible: (data) => {
+      try {
+        return insertFn(data);
+      } catch (e) {
+        const error = getError(e);
+
+        if (error.message.startsWith('UNIQUE constraint failed')) {
+          return { affectedRows: 0 };
+        }
+
+        throw error;
+      }
+    },
+
+    /**
+     * Remove
+     */
+    remove: () => {
+      if (wheres.length === 0) {
+        throw new Error('Refused to flush the table to avoid disaster.');
       }
 
-      throw error;
-    }
-  },
+      const parameters: string[] = [];
+      const condition = makeWhere(fields, wheres, parameters);
+      const limit = makeLimit(limitState);
 
-  /**
-   * Remove
-   */
-  remove: function () {
-    if (this.wheres.length === 0) {
-      throw new Error('Refused to flush the table to avoid disaster.');
-    }
+      const sql = `DELETE FROM ${encodeName(name)} WHERE ${condition}${limit};`;
 
-    const condition = makeWhere(name, fields, this.wheres);
-    const limit = makeLimit(name, fields, this.limitState);
+      return queryRun({ sql, parameters, name, fields, options });
+    },
 
-    const sql = `DELETE FROM ${encodeName(name)} WHERE ${condition}${limit};`;
+    /**
+     * Update
+     */
+    update: () => {
+      const parameters: string[] = [];
+      const set = makeSet(fields, sets, parameters);
+      const condition = makeWhere(fields, wheres, parameters);
+      const limit = makeLimit(limitState);
 
-    const parameters = getAndFlushParameters();
-    const options = this.options;
-    this.clearState();
+      const sql = `UPDATE ${encodeName(
+        name
+      )} SET ${set} WHERE ${condition}${limit};`;
 
-    return queryRun({ sql, parameters, name, fields, options });
-  },
+      return queryRun({ sql, parameters, name, fields, options });
+    },
 
-  /**
-   * Update
-   */
-  update: function () {
-    const set = makeSet(name, fields, this.sets);
-    const condition = makeWhere(name, fields, this.wheres);
-    const limit = makeLimit(name, fields, this.limitState);
+    /**
+     * Count
+     */
+    count: () => {
+      const parameters: string[] = [];
+      const condition = makeWhere(fields, wheres, parameters);
+      const sql = `SELECT COUNT(*) FROM ${encodeName(name)} WHERE ${condition};`;
 
-    const sql = `UPDATE ${encodeName(
-      name
-    )} SET ${set} WHERE ${condition}${limit};`;
+      const rows = queryGet({ sql, parameters, name, fields, options });
 
-    const parameters = getAndFlushParameters();
-    const options = this.options;
-    this.clearState();
+      return parseInt(rows[0]['COUNT(*)'], 10);
+    },
 
-    return queryRun({ sql, parameters, name, fields, options });
-  },
+    /**
+     * Pass raw Sql values:
+     */
+    rawSql: (sqlString: string) => ({ _SQL: sqlString }),
 
-  /**
-   * Count
-   */
-  count: function () {
-    const condition = makeWhere(name, fields, this.wheres);
-    const sql = `SELECT COUNT(*) FROM ${encodeName(name)} WHERE ${condition};`;
-    const parameters = getAndFlushParameters();
-    const options = this.options;
-    this.clearState();
+    /**
+     * Returns the SQL the builder would execute, with parameters inlined.
+     * Intended for tests and debugging — never feed this back into the
+     * driver (no escaping). `kind` picks which terminal form to render:
+     *   - 'find' (default): SELECT *
+     *   - 'count':          SELECT COUNT(*)
+     *   - 'update':         UPDATE ... SET ...
+     *   - 'remove':         DELETE FROM ...
+     */
+    toSQL: (kind: 'find' | 'count' | 'update' | 'remove' = 'find'): string => {
+      const parameters: string[] = [];
+      const condition = makeWhere(fields, wheres, parameters);
+      const limit = makeLimit(limitState);
+      const table = encodeName(name);
 
-    const rows = queryGet({ sql, parameters, name, fields, options });
+      let sql: string;
+      switch (kind) {
+        case 'find': {
+          const ordersSql = makeOrders(orders);
+          sql = `SELECT * FROM ${table} WHERE ${condition}${ordersSql}${limit};`;
+          break;
+        }
+        case 'count':
+          sql = `SELECT COUNT(*) FROM ${table} WHERE ${condition};`;
+          break;
+        case 'update': {
+          const set = makeSet(fields, sets, parameters);
+          sql = `UPDATE ${table} SET ${set} WHERE ${condition}${limit};`;
+          break;
+        }
+        case 'remove':
+          sql = `DELETE FROM ${table} WHERE ${condition}${limit};`;
+          break;
+      }
 
-    return parseInt(rows[0]['COUNT(*)'], 10);
-  },
+      return inlineParameters(sql, parameters);
+    },
 
-  /**
-   * Pass raw Sql values:
-   */
-  rawSql: function (sqlString: string) {
-    return { _SQL: sqlString };
-  },
+    /**
+     * Execute raw Sql queries:
+     */
+    rawQuery: (sql: string, mode: 'read' | 'write') => {
+      if (mode === 'read') {
+        return queryGet({ sql, parameters: [], name, fields, options: [] });
+      }
 
-  /**
-   * Execute raw Sql queries:
-   */
-  rawQuery: function (sql: string, mode: 'read' | 'write') {
-    if (mode === 'read') {
-      return queryGet({ sql, parameters: [], name, fields, options: [] });
-    }
+      const writeResult = queryRun({
+        sql,
+        parameters: [],
+        name,
+        fields,
+        options: [],
+      });
+      return [{ affectedRows: writeResult.affectedRows.toString() }];
+    },
+  };
+}
 
-    const writeResult = queryRun({
-      sql,
-      parameters: [],
-      name,
-      fields,
-      options: [],
-    });
-    return [{ affectedRows: writeResult.affectedRows.toString() }];
-  },
-
-  clearState: function () {
-    this.sets = [];
-    this.wheres = [];
-    this.orders = [];
-    this.limitState = null;
-    this.options = [];
-  },
-});
+export const declareTable = <TableType>({
+  name,
+  fields,
+}: DeclarationOptions): TableInstance<TableType> =>
+  createBuilder<TableType>(name, fields, EMPTY_STATE);
