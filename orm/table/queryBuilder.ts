@@ -1,4 +1,4 @@
-import { AnyField, Fields } from '../fields/declaration';
+import { AnyField, Fields, resolveField } from '../fields/declaration';
 import { encode, encodeName } from '../fields/encode';
 import { ComparisonSymbol, Limit, OrderBy, Set, Value, Where } from '../types';
 
@@ -36,7 +36,8 @@ const escapeOperator = (
 export function makeWhere(
   fields: Fields,
   conditions: ReadonlyArray<Where>,
-  parameters: string[]
+  parameters: string[],
+  tableName: string
 ) {
   if (Object.keys(conditions).length === 0) {
     return '1 = 1';
@@ -44,18 +45,19 @@ export function makeWhere(
 
   return conditions
     .map(({ fieldName, comparison, value, values }) => {
+      const field = resolveField(fields, fieldName, tableName);
       const escapedField = encodeName(fieldName);
       const escapedOperator = escapeOperator(comparison, value, values);
       let escapedValue = '';
 
       if (values.length) {
         const inValues = values
-          .map((singleValue) => encode(singleValue, fields[fieldName], parameters))
+          .map((singleValue) => encode(singleValue, field, parameters))
           .join(', ');
 
         escapedValue = `(${inValues})`;
       } else {
-        escapedValue = encode(value, fields[fieldName], parameters);
+        escapedValue = encode(value, field, parameters);
       }
 
       return `${escapedField} ${escapedOperator} ${escapedValue}`;
@@ -96,11 +98,13 @@ export function makeLimit(limit: Limit | null) {
 export function makeSet(
   fields: Fields,
   data: ReadonlyArray<Set>,
-  parameters: string[]
+  parameters: string[],
+  tableName: string
 ) {
   return data
     .map(({ fieldName, value }) => {
-      const escaped = encode(value, fields[fieldName], parameters);
+      const field = resolveField(fields, fieldName, tableName);
+      const escaped = encode(value, field, parameters);
 
       return `${encodeName(fieldName)} = ${escaped}`;
     })

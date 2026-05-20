@@ -57,7 +57,22 @@ export async function callController(
   // All other request use JSON:
   else {
     const bodyText = await request.text();
-    body = bodyText ? JSON.parse(bodyText) : {}; // TODO pkoi pas de try ?
+    if (bodyText) {
+      try {
+        body = JSON.parse(bodyText);
+      } catch {
+        console.log(
+          `🟠 400 - Invalid JSON body on ${request.method} ${requestPath}`
+        );
+        return new Response(
+          JSON.stringify({ error: 'Invalid JSON body' }),
+          {
+            status: 400,
+            headers: [...CORS_HEADERS, ['Content-Type', 'application/json']],
+          }
+        );
+      }
+    }
   }
 
   const controllerRequest = {

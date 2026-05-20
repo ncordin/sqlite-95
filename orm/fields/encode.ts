@@ -49,7 +49,15 @@ export const encode = (
 
     case 'string':
       if (useEscaper) {
-        parameters.push((value as string).slice(0, field.maxLength)); // BUG ! (example null)
+        const stringValue = value as string;
+        if (stringValue.length > field.maxLength) {
+          console.warn(
+            `[sqlite-95] String value truncated: length ${stringValue.length} ` +
+              `exceeds field maxLength ${field.maxLength}. ` +
+              `Value will be cut: ${JSON.stringify(stringValue.slice(0, 40))}…`
+          );
+        }
+        parameters.push(stringValue.slice(0, field.maxLength));
         return '?';
       } else {
         return quotify(`${value}`, '"');

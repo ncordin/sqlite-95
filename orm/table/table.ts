@@ -13,7 +13,7 @@ import {
   Where,
   WriteResult,
 } from '../types';
-import { Fields } from '../fields/declaration';
+import { Fields, resolveField } from '../fields/declaration';
 import { encode, encodeName } from '../fields/encode';
 import { decodeRaws } from '../fields/decode';
 import { getError } from '../utils/error';
@@ -122,7 +122,9 @@ function createBuilder<TableType>(
       .join(', ');
 
     const values = Object.entries(data)
-      .map(([field, value]) => encode(value as Value, fields[field], parameters))
+      .map(([fieldName, value]) =>
+        encode(value as Value, resolveField(fields, fieldName, name), parameters)
+      )
       .join(', ');
 
     const sql = `INSERT INTO ${encodeName(
@@ -156,6 +158,11 @@ function createBuilder<TableType>(
      * Increment
      */
     increment: (fieldName, value) => {
+      if (typeof value !== 'number' || !Number.isFinite(value)) {
+        throw new Error(
+          `increment() requires a finite number, got ${String(value)}.`
+        );
+      }
       const escapedField = encodeName(String(fieldName));
       return next({
         sets: [
@@ -211,15 +218,29 @@ function createBuilder<TableType>(
     /**
      * Limit
      */
-    limit: (quantity, position) =>
-      next({ limitState: { quantity, position } }),
+    limit: (quantity, position) => {
+      if (!Number.isInteger(quantity) || quantity < 0) {
+        throw new Error(
+          `limit() quantity must be a non-negative integer, got ${String(quantity)}.`
+        );
+      }
+      if (
+        position !== undefined &&
+        (!Number.isInteger(position) || position < 0)
+      ) {
+        throw new Error(
+          `limit() position must be a non-negative integer, got ${String(position)}.`
+        );
+      }
+      return next({ limitState: { quantity, position } });
+    },
 
     /**
      * FindAll
      */
     findAll: () => {
       const parameters: string[] = [];
-      const condition = makeWhere(fields, wheres, parameters);
+      const condition = makeWhere(fields, wheres, parameters, name);
       const ordersSql = makeOrders(orders);
       const limit = makeLimit(limitState);
 
@@ -229,7 +250,7 @@ function createBuilder<TableType>(
 
       const rows = queryGet({ sql, parameters, name, fields, options });
 
-      return decodeRaws<TableType>(rows, fields);
+      return decodeRaws<TableType>(rows, fields, name);
     },
 
     /**
@@ -273,7 +294,7 @@ function createBuilder<TableType>(
       }
 
       const parameters: string[] = [];
-      const condition = makeWhere(fields, wheres, parameters);
+      const condition = makeWhere(fields, wheres, parameters, name);
       const limit = makeLimit(limitState);
 
       const sql = `DELETE FROM ${encodeName(name)} WHERE ${condition}${limit};`;
@@ -286,8 +307,8 @@ function createBuilder<TableType>(
      */
     update: () => {
       const parameters: string[] = [];
-      const set = makeSet(fields, sets, parameters);
-      const condition = makeWhere(fields, wheres, parameters);
+      const set = makeSet(fields, sets, parameters, name);
+      const condition = makeWhere(fields, wheres, parameters, name);
       const limit = makeLimit(limitState);
 
       const sql = `UPDATE ${encodeName(
@@ -302,7 +323,7 @@ function createBuilder<TableType>(
      */
     count: () => {
       const parameters: string[] = [];
-      const condition = makeWhere(fields, wheres, parameters);
+      const condition = makeWhere(fields, wheres, parameters, name);
       const sql = `SELECT COUNT(*) FROM ${encodeName(name)} WHERE ${condition};`;
 
       const rows = queryGet({ sql, parameters, name, fields, options });
@@ -326,7 +347,7 @@ function createBuilder<TableType>(
      */
     toSQL: (kind: 'find' | 'count' | 'update' | 'remove' = 'find'): string => {
       const parameters: string[] = [];
-      const condition = makeWhere(fields, wheres, parameters);
+      const condition = makeWhere(fields, wheres, parameters, name);
       const limit = makeLimit(limitState);
       const table = encodeName(name);
 
@@ -341,7 +362,7 @@ function createBuilder<TableType>(
           sql = `SELECT COUNT(*) FROM ${table} WHERE ${condition};`;
           break;
         case 'update': {
-          const set = makeSet(fields, sets, parameters);
+          const set = makeSet(fields, sets, parameters, name);
           sql = `UPDATE ${table} SET ${set} WHERE ${condition}${limit};`;
           break;
         }

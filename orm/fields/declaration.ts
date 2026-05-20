@@ -195,6 +195,22 @@ export type Fields = {
   [key: string]: AnyField;
 };
 
+export const resolveField = (
+  fields: Fields,
+  fieldName: string,
+  tableName: string
+): AnyField => {
+  const field = fields[fieldName];
+  if (!field) {
+    throw new Error(
+      `Unknown field "${fieldName}" on table "${tableName}": not declared in the schema. ` +
+        `The TS declaration may be out of sync with the database (forgotten ALTER TABLE, ` +
+        `stale declaration file, or typo in the field name).`
+    );
+  }
+  return field;
+};
+
 type TypeOfField<Field> = Field extends NumberField<true>
   ? number | null
   : Field extends NumberField<false>

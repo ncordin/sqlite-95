@@ -6,10 +6,6 @@ function decode(value: unknown, field: AnyField) {
     return null;
   }
 
-  if (value === undefined) {
-    return undefined;
-  }
-
   switch (field.type) {
     case 'boolean':
       return !!value;
@@ -31,12 +27,24 @@ function decode(value: unknown, field: AnyField) {
   }
 }
 
-function decodeRaw<TableType>(raw: RawRow, fields: Fields) {
+function decodeRaw<TableType>(raw: RawRow, fields: Fields, tableName: string) {
   return Object.keys(fields).reduce((previous, key) => {
+    if (!(key in raw)) {
+      throw new Error(
+        `Decode failed: column "${key}" is declared in the schema for table ` +
+          `"${tableName}" but missing from the query result. The database may ` +
+          `be out of sync with the declaration (forgotten ALTER TABLE, stale ` +
+          `declaration file).`
+      );
+    }
     return { ...previous, [key]: decode(raw[key], fields[key]) };
   }, {}) as TableType;
 }
 
-export function decodeRaws<TableType>(rows: RawRow[], fields: Fields) {
-  return rows.map((row) => decodeRaw<TableType>(row, fields));
+export function decodeRaws<TableType>(
+  rows: RawRow[],
+  fields: Fields,
+  tableName: string
+) {
+  return rows.map((row) => decodeRaw<TableType>(row, fields, tableName));
 }

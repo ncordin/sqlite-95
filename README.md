@@ -7,7 +7,6 @@ SQLite ORM with a web admin.
 - Table declaration: need UNIQUE and INDEX
 - table logs / errors ?
 - SQL: group, having.
-- Table.lastQuery for debug.
 - handle enum / bool / date in the admin form.
 - make server start command runnable from any directory.
 - write a complete Getting started guide https://khalilstemmler.com/blogs/typescript/node-starter-project/
@@ -19,7 +18,6 @@ SQLite ORM with a web admin.
 
 # Bugs
 
-- encode crash if value is wrong (eg: null instead of null) (happens when differences DB vs declaration)
 - if a table has a INTEGER primary key, it will be an alias of rowid and break the edit in admin
 
 # How to publish new version
