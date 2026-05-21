@@ -4,7 +4,8 @@ SQLite ORM with a web admin.
 
 # TODOS
 
-- Table declaration: need UNIQUE and INDEX
+!!! Table declaration: need UNIQUE and INDEX
+
 - table logs / errors ?
 - SQL: group, having.
 - handle enum / bool / date in the admin form.

@@ -17,6 +17,8 @@ type QueryOptions = {
   name: string;
   fields: Fields;
   options: ReadonlyArray<QueryOption>;
+  unique?: (string | string[])[];
+  indexes?: (string | string[])[];
   recursive?: boolean;
 };
 
@@ -36,6 +38,8 @@ export const queryGet = ({
   name,
   fields,
   options,
+  unique = [],
+  indexes = [],
   recursive,
 }: QueryOptions): RawRow[] => {
   logQuery(sql, parameters, options);
@@ -50,10 +54,12 @@ export const queryGet = ({
     const error = getError(e);
 
     if (error.message.startsWith(NO_SUCH_TABLE) && !recursive) {
-      const createTable = makeCreateTable(name, fields);
+      const createTableQueries = makeCreateTable(name, fields, unique, indexes);
 
-      logQuery(createTable, [], options);
-      database.query(createTable).run();
+      for (const createTable of createTableQueries) {
+        logQuery(createTable, [], options);
+        database.query(createTable).run();
+      }
 
       return queryGet({
         sql,
@@ -61,6 +67,8 @@ export const queryGet = ({
         name,
         fields,
         options,
+        unique,
+        indexes,
         recursive: true,
       });
     }
@@ -76,6 +84,8 @@ export const queryRun = ({
   fields,
   recursive,
   options,
+  unique = [],
+  indexes = [],
 }: QueryOptions): WriteResult => {
   logQuery(sql, parameters, options);
 
@@ -97,10 +107,12 @@ export const queryRun = ({
     const error = getError(e);
 
     if (error.message.startsWith(NO_SUCH_TABLE) && !recursive) {
-      const createTable = makeCreateTable(name, fields);
+      const createTableQueries = makeCreateTable(name, fields, unique, indexes);
 
-      logQuery(createTable, [], options);
-      database.query(createTable).run();
+      for (const createTable of createTableQueries) {
+        logQuery(createTable, [], options);
+        database.query(createTable).run();
+      }
 
       return queryRun({
         sql,
@@ -108,6 +120,8 @@ export const queryRun = ({
         name,
         fields,
         options,
+        unique,
+        indexes,
         recursive: true,
       });
     }

@@ -13,7 +13,7 @@ const fields = {
 };
 
 type Player = InferFromFields<typeof fields>;
-const Players = Table.make<Player>({ name: 'players_ops', fields });
+const Players = Table.make<Player>({ name: 'players_ops', fields }).option('no-log');
 
 const seed = () => {
   Players.insert({
@@ -88,7 +88,12 @@ describe('Select', () => {
     expect(query.toSQL()).toBe(
       "SELECT * FROM `players_ops` WHERE `state` IN ('active');"
     );
-    expect(query.findAll().map((r) => r.name).sort()).toEqual(['Alice', 'Bob']);
+    expect(
+      query
+        .findAll()
+        .map((r) => r.name)
+        .sort()
+    ).toEqual(['Alice', 'Bob']);
   });
 
   test('orderBy supports ASC, DESC, and stacking', () => {
@@ -98,7 +103,11 @@ describe('Select', () => {
       'SELECT * FROM `players_ops` WHERE 1 = 1 ORDER BY `isCool` DESC, `gold` ASC;'
     );
     // isCool=true (1) groups first, then gold ASC; Carol (isCool=false) last.
-    expect(query.findAll().map((r) => r.name)).toEqual(['Bob', 'Alice', 'Carol']);
+    expect(query.findAll().map((r) => r.name)).toEqual([
+      'Bob',
+      'Alice',
+      'Carol',
+    ]);
   });
 
   test('limit accepts quantity and optional offset', () => {
@@ -297,7 +306,7 @@ describe('Raw SQL', () => {
       'SELECT COUNT(*) as c FROM players_ops',
       'read'
     );
-    expect(parseInt(rows[0].c, 10)).toBe(3);
+    expect(parseInt(String(rows[0].c), 10)).toBe(3);
   });
 
   test("rawQuery 'write' returns affectedRows", () => {

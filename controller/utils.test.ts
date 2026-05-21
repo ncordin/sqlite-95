@@ -8,7 +8,7 @@ test('join empty prefixes', () => {
   expect(joinPrefix('/', '/')).toBe('/');
 });
 
-test('join with one empty prefixes', () => {
+test('join with one empty prefix', () => {
   expect(joinPrefix('', 'second')).toBe('/second/');
   expect(joinPrefix('/', 'second')).toBe('/second/');
   expect(joinPrefix('', 'second/')).toBe('/second/');

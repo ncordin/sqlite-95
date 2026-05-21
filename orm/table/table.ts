@@ -18,9 +18,13 @@ import { encode, encodeName } from '../fields/encode';
 import { decodeRaws } from '../fields/decode';
 import { getError } from '../utils/error';
 
-type DeclarationOptions = {
+type ConstraintEntry<TableType> = (keyof TableType & string) | (keyof TableType & string)[];
+
+type DeclarationOptions<TableType> = {
   name: string;
   fields: Fields;
+  unique?: ConstraintEntry<TableType>[];
+  indexes?: ConstraintEntry<TableType>[];
 };
 
 type NumberFieldName<TableType> = {
@@ -107,12 +111,14 @@ const EMPTY_STATE: BuilderState = {
 function createBuilder<TableType>(
   name: string,
   fields: Fields,
-  state: BuilderState
+  state: BuilderState,
+  unique: ConstraintEntry<TableType>[],
+  indexes: ConstraintEntry<TableType>[]
 ): TableInstance<TableType> {
   const { sets, wheres, orders, limitState, options } = state;
 
   const next = (patch: Partial<BuilderState>): TableInstance<TableType> =>
-    createBuilder<TableType>(name, fields, { ...state, ...patch });
+    createBuilder<TableType>(name, fields, { ...state, ...patch }, unique, indexes);
 
   const insertFn = (data: Insertable<TableType>): WriteResult => {
     const parameters: string[] = [];
@@ -123,7 +129,11 @@ function createBuilder<TableType>(
 
     const values = Object.entries(data)
       .map(([fieldName, value]) =>
-        encode(value as Value, resolveField(fields, fieldName, name), parameters)
+        encode(
+          value as Value,
+          resolveField(fields, fieldName, name),
+          parameters
+        )
       )
       .join(', ');
 
@@ -131,7 +141,7 @@ function createBuilder<TableType>(
       name
     )} (${fieldNames}) VALUES (${values});`;
 
-    return queryRun({ sql, parameters, name, fields, options });
+    return queryRun({ sql, parameters, name, fields, options, unique, indexes });
   };
 
   return {
@@ -248,7 +258,7 @@ function createBuilder<TableType>(
         name
       )} WHERE ${condition}${ordersSql}${limit};`;
 
-      const rows = queryGet({ sql, parameters, name, fields, options });
+      const rows = queryGet({ sql, parameters, name, fields, options, unique, indexes });
 
       return decodeRaws<TableType>(rows, fields, name);
     },
@@ -260,7 +270,7 @@ function createBuilder<TableType>(
       const limited = createBuilder<TableType>(name, fields, {
         ...state,
         limitState: { quantity: 1 },
-      });
+      }, unique, indexes);
       const rows = limited.findAll();
 
       return rows.length ? rows[0] : null;
@@ -299,7 +309,7 @@ function createBuilder<TableType>(
 
       const sql = `DELETE FROM ${encodeName(name)} WHERE ${condition}${limit};`;
 
-      return queryRun({ sql, parameters, name, fields, options });
+      return queryRun({ sql, parameters, name, fields, options, unique, indexes });
     },
 
     /**
@@ -315,7 +325,7 @@ function createBuilder<TableType>(
         name
       )} SET ${set} WHERE ${condition}${limit};`;
 
-      return queryRun({ sql, parameters, name, fields, options });
+      return queryRun({ sql, parameters, name, fields, options, unique, indexes });
     },
 
     /**
@@ -326,9 +336,9 @@ function createBuilder<TableType>(
       const condition = makeWhere(fields, wheres, parameters, name);
       const sql = `SELECT COUNT(*) FROM ${encodeName(name)} WHERE ${condition};`;
 
-      const rows = queryGet({ sql, parameters, name, fields, options });
+      const rows = queryGet({ sql, parameters, name, fields, options, unique, indexes });
 
-      return parseInt(rows[0]['COUNT(*)'], 10);
+      return parseInt(String(rows[0]['COUNT(*)']), 10);
     },
 
     /**
@@ -379,7 +389,7 @@ function createBuilder<TableType>(
      */
     rawQuery: (sql: string, mode: 'read' | 'write') => {
       if (mode === 'read') {
-        return queryGet({ sql, parameters: [], name, fields, options: [] });
+        return queryGet({ sql, parameters: [], name, fields, options, unique, indexes });
       }
 
       const writeResult = queryRun({
@@ -387,7 +397,9 @@ function createBuilder<TableType>(
         parameters: [],
         name,
         fields,
-        options: [],
+        options,
+        unique,
+        indexes,
       });
       return [{ affectedRows: writeResult.affectedRows.toString() }];
     },
@@ -397,5 +409,7 @@ function createBuilder<TableType>(
 export const declareTable = <TableType>({
   name,
   fields,
-}: DeclarationOptions): TableInstance<TableType> =>
-  createBuilder<TableType>(name, fields, EMPTY_STATE);
+  unique = [],
+  indexes = [],
+}: DeclarationOptions<TableType>): TableInstance<TableType> =>
+  createBuilder<TableType>(name, fields, EMPTY_STATE, unique, indexes);

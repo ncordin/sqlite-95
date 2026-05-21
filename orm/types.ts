@@ -35,7 +35,7 @@ export type Limit = {
 };
 
 export type RawRow = {
-  [key: string]: string;
+  [key: string]: string | number | null;
 };
 
 export type DatabaseConfiguration = {

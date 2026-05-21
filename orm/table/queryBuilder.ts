@@ -143,6 +143,34 @@ function makeFields(fields: Fields) {
     .join(', ');
 }
 
-export function makeCreateTable(name: string, fields: Fields) {
-  return `CREATE TABLE \`${name}\` (${makeFields(fields)});`;
+export function makeCreateTable(
+  name: string,
+  fields: Fields,
+  unique: (string | string[])[],
+  indexes: (string | string[])[]
+): string[] {
+  const table = encodeName(name);
+  const statements: string[] = [
+    `CREATE TABLE ${table} (${makeFields(fields)});`,
+  ];
+
+  for (const entry of unique) {
+    const cols = (Array.isArray(entry) ? entry : [entry])
+      .map((col) => encodeName(col))
+      .join(', ');
+    statements.push(
+      `CREATE UNIQUE INDEX \`idx_${name}_${String(entry)}\` ON ${table} (${cols});`
+    );
+  }
+
+  for (const entry of indexes) {
+    const cols = (Array.isArray(entry) ? entry : [entry])
+      .map((col) => encodeName(col))
+      .join(', ');
+    statements.push(
+      `CREATE INDEX \`idx_${name}_${String(entry)}\` ON ${table} (${cols});`
+    );
+  }
+
+  return statements;
 }

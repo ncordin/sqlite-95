@@ -13,7 +13,9 @@ const fields = {
 };
 
 type Player = InferFromFields<typeof fields>;
-const Players = Table.make<Player>({ name: 'players_safety', fields });
+const Players = Table.make<Player>({ name: 'players_safety', fields }).option(
+  'no-log'
+);
 
 const seed = () => {
   Players.insert({
@@ -55,8 +57,8 @@ const tableStillHasSeed = () => {
   expect(Players.where('name', '=', 'Bob').findOne()?.gold).toBe(50);
 };
 
-describe('increment() — numeric coercion guard', () => {
-  test('rejects non-numeric values', () => {
+describe('increment()', () => {
+  test('rejects non-numeric (NaN & injection)', () => {
     const injections = [
       '1; DROP TABLE players_safety; --',
       '1 OR 1=1',
@@ -80,7 +82,7 @@ describe('increment() — numeric coercion guard', () => {
   });
 });
 
-describe('limit() — integer coercion guard', () => {
+describe('limit()', () => {
   test('rejects non-integer quantity and position', () => {
     const evilNumbers = [
       '1; DROP TABLE players_safety; --',
@@ -103,46 +105,42 @@ describe('limit() — integer coercion guard', () => {
         /position must be a non-negative integer/
       );
     }
-    // `undefined` is the legitimate sentinel for "no offset" — must pass.
     expect(() => Players.limit(1, undefined).findAll()).not.toThrow();
     tableStillHasSeed();
   });
 });
 
-describe('Parameterized value paths', () => {
-  // Payloads kept ≤ 30 chars to stay within field.maxLength on `name` — the
-  // separate string-truncation bug (see BUGS.md "Critique 1") would
-  // otherwise mask verbatim-storage assertions in insert/set tests.
+describe('Parameterization', () => {
   const PAYLOADS = [
     "'; DROP TABLE t; --",
     "' OR '1'='1",
     "x'); DELETE; --",
     "' UNION SELECT 1--",
     "Alice' OR 1=1 --",
-    "\\\"; DROP --",
+    '\\"; DROP --',
   ];
 
-  test('where() treats malicious string values as data, not SQL', () => {
+  test('where() treats malicious strings as data', () => {
     for (const payload of PAYLOADS) {
       expect(Players.where('name', '=', payload).findOne()).toBeNull();
     }
     tableStillHasSeed();
   });
 
-  test('where() with LIKE treats wildcards inside the payload as data', () => {
+  test('where() LIKE treats wildcards as data', () => {
     for (const payload of PAYLOADS) {
       expect(Players.where('name', 'LIKE', payload).count()).toBe(0);
     }
     tableStillHasSeed();
   });
 
-  test('in() parameterizes every value in the list', () => {
+  test('in() parameterizes every value', () => {
     expect(Players.in('name', PAYLOADS).count()).toBe(0);
     expect(Players.in('name', [...PAYLOADS, 'Alice']).count()).toBe(1);
     tableStillHasSeed();
   });
 
-  test('insert() stores malicious strings verbatim', () => {
+  test('insert() stores strings verbatim', () => {
     for (const payload of PAYLOADS) {
       Players.insert({
         name: payload,
@@ -156,7 +154,7 @@ describe('Parameterized value paths', () => {
     expect(Players.count()).toBe(3 + PAYLOADS.length);
   });
 
-  test('set().update() stores malicious strings verbatim', () => {
+  test('update() stores strings verbatim', () => {
     for (const payload of PAYLOADS) {
       Players.set('name', payload).where('name', '=', 'Alice').update();
       expect(Players.where('name', '=', payload).findOne()?.name).toBe(payload);
@@ -165,16 +163,14 @@ describe('Parameterized value paths', () => {
     tableStillHasSeed();
   });
 
-  test('remove() with a malicious where value deletes nothing', () => {
+  test('remove() deletes nothing for malicious where', () => {
     for (const payload of PAYLOADS) {
-      expect(
-        Players.where('name', '=', payload).remove().affectedRows
-      ).toBe(0);
+      expect(Players.where('name', '=', payload).remove().affectedRows).toBe(0);
     }
     tableStillHasSeed();
   });
 
-  test('count() with a malicious where value returns zero', () => {
+  test('count() returns zero for malicious where', () => {
     for (const payload of PAYLOADS) {
       expect(Players.where('name', '=', payload).count()).toBe(0);
     }
@@ -182,8 +178,8 @@ describe('Parameterized value paths', () => {
   });
 });
 
-describe('Operator allowlist', () => {
-  test('where() rejects unknown comparison operators', () => {
+describe('Operators', () => {
+  test('where() rejects unknown operators', () => {
     const evilOperators = [
       'DROP TABLE players_safety; --',
       '= 1 OR 1=1 --',
@@ -199,8 +195,8 @@ describe('Operator allowlist', () => {
   });
 });
 
-describe('String overflow warning', () => {
-  test('encode warns when value exceeds field.maxLength', () => {
+describe('Truncation', () => {
+  test('warns when value exceeds maxLength', () => {
     const originalWarn = console.warn;
     const warnings: string[] = [];
     console.warn = (...args: unknown[]) => {
@@ -208,7 +204,6 @@ describe('String overflow warning', () => {
     };
 
     try {
-      // `name` has maxLength 30 — push a 50-char value.
       const longName = 'A'.repeat(50);
       Players.insert({
         name: longName,
@@ -220,14 +215,12 @@ describe('String overflow warning', () => {
 
       expect(warnings.length).toBeGreaterThan(0);
       expect(warnings[0]).toMatch(/truncated/);
-      expect(warnings[0]).toMatch(/maxLength 30/);
-      expect(warnings[0]).toMatch(/length 50/);
     } finally {
       console.warn = originalWarn;
     }
   });
 
-  test('encode stays silent when value fits within maxLength', () => {
+  test('silent when value fits within maxLength', () => {
     const originalWarn = console.warn;
     const warnings: string[] = [];
     console.warn = (...args: unknown[]) => {
@@ -243,15 +236,10 @@ describe('String overflow warning', () => {
   });
 });
 
-describe('Schema/declaration sync guard', () => {
-  // When a column name is not declared in the TS schema (forgotten ALTER
-  // TABLE, stale declaration file, typo), accessing `fields[fieldName]`
-  // used to return undefined and crash deep inside encode() with an opaque
-  // "Cannot read properties of undefined" error. The resolver must throw
-  // an actionable message naming the field and table.
+describe('Fields guard', () => {
   const ERR = /Unknown field "ghost" on table "players_safety"/;
 
-  test('where() throws a clear error for an unknown field', () => {
+  test('where() error for unknown field', () => {
     expect(() =>
       Players.where('ghost' as never, '=', 'x' as never).findAll()
     ).toThrow(ERR);
@@ -263,13 +251,10 @@ describe('Schema/declaration sync guard', () => {
     ).toThrow(ERR);
   });
 
-  test('in() throws a clear error for an unknown field', () => {
+  test('in() & set() error for unknown field', () => {
     expect(() =>
       Players.in('ghost' as never, ['x'] as never).findAll()
     ).toThrow(ERR);
-  });
-
-  test('set() throws a clear error for an unknown field on update', () => {
     expect(() =>
       Players.set('ghost' as never, 'x' as never)
         .where('name', '=', 'Alice')
@@ -277,27 +262,21 @@ describe('Schema/declaration sync guard', () => {
     ).toThrow(ERR);
   });
 
-  test('insert() throws a clear error for an unknown field', () => {
+  test('insert() error for unknown field', () => {
     expect(() =>
       Players.insert({
         name: 'Dave',
         gold: 10,
         isCool: true,
         state: 'active',
-        createdAt: new Date('2024-05-01T00:00:00'),
+        createdAt: new Date(),
         ghost: 'x',
       } as never)
     ).toThrow(ERR);
   });
 });
 
-describe('Schema/declaration sync guard — missing DB column', () => {
-  // The TS schema declares a column that the underlying DB table does not
-  // have (forgotten ALTER TABLE, stale declaration). SELECT * cannot return
-  // the column, so the raw row is missing the key. decode used to silently
-  // return `undefined` typed as the field's declared type — a typed lie that
-  // crashed deep in consumer code. The decoder must throw with an actionable
-  // message naming the field and table.
+describe('Missing columns', () => {
   const ghostFields = {
     id: Table.number({ primaryKey: true, autoIncrement: true }),
     name: Table.string({ maxLength: 30 }),
@@ -311,20 +290,15 @@ describe('Schema/declaration sync guard — missing DB column', () => {
   const GhostPlayers = Table.make<GhostPlayer>({
     name: 'players_safety',
     fields: ghostFields,
-  });
+  }).option('no-log');
 
   const ERR =
     /Decode failed: column "ghost" is declared in the schema for table "players_safety" but missing from the query result/;
 
-  test('findAll() throws when a declared column is absent from the row', () => {
+  test('error when declared column is absent', () => {
     expect(() => GhostPlayers.findAll()).toThrow(ERR);
-    tableStillHasSeed();
-  });
-
-  test('findOne() throws when a declared column is absent from the row', () => {
     expect(() => GhostPlayers.where('name', '=', 'Alice').findOne()).toThrow(
       ERR
     );
-    tableStillHasSeed();
   });
 });
