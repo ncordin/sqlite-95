@@ -8,6 +8,7 @@ import {
 } from './fields/declaration';
 
 export { initDatabase } from './drivers';
+export { checkSchema } from './schema';
 
 export const Table = {
   make: declareTable,

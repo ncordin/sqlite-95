@@ -406,10 +406,17 @@ function createBuilder<TableType>(
   };
 }
 
-export const declareTable = <TableType>({
-  name,
-  fields,
-  unique = [],
-  indexes = [],
-}: DeclarationOptions<TableType>): TableInstance<TableType> =>
-  createBuilder<TableType>(name, fields, EMPTY_STATE, unique, indexes);
+export const TABLE_REGISTRY = new Map<string, DeclarationOptions<any>>();
+
+export const declareTable = <TableType>(
+  options: DeclarationOptions<TableType>
+): TableInstance<TableType> => {
+  TABLE_REGISTRY.set(options.name, options);
+  return createBuilder<TableType>(
+    options.name,
+    options.fields,
+    EMPTY_STATE,
+    options.unique || [],
+    options.indexes || []
+  );
+};

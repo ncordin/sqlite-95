@@ -1,9 +1,9 @@
-import { initDatabase } from '../orm/drivers/bun';
+import { initDatabase, checkSchema } from '../orm';
 import { HandleRequestOptions } from './types';
 import { getPackageVersion } from './utils/version';
 import { resolvePaths } from './utils/paths';
 
-export const initialize = (options: HandleRequestOptions) => {
+export const initialize = async (options: HandleRequestOptions) => {
   const paths = resolvePaths(options);
   const base = `http://localhost:${options.port}`;
 
@@ -25,11 +25,36 @@ export const initialize = (options: HandleRequestOptions) => {
 
   if (options.database) {
     const { version } = initDatabase({ file: options.database.file });
-    console.log(
-      row('💾', 'Database', `${options.database.file} (v${version})`)
-    );
+
+    if (options.database.check) {
+      const result = await checkSchema({
+        tables: options.database.check,
+        ignore: options.database.ignore,
+        verbose: false,
+      });
+
+      if (result.ok) {
+        console.log(
+          `  💾 ${options.database.file} (SQLite ${version})  ✅  ${result.totalTables} tables synced`
+        );
+      } else {
+        console.log(
+          `  💾 ${options.database.file} (SQLite ${version})  ⚡  ${result.tablesWithDiffs} drift in ${result.totalTables} tables`
+        );
+        if (result.details.length > 0) {
+          console.log('');
+          console.log(result.details.join('\n'));
+          console.log('');
+        }
+        console.log(
+          `   → bun node_modules/sqlite-95/bin/cli check ${options.database.file} ${options.database.check}`
+        );
+      }
+    } else {
+      console.log(`  💾 ${options.database.file} (SQLite ${version})`);
+    }
   } else {
-    console.log(row('💾', 'Database', '(none)'));
+    console.log(`  💾 (none)`);
   }
 
   console.log('');

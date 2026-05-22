@@ -8,12 +8,16 @@
     "url": "git@github.com:ncordin/sqlite-95.git"
   },
   "main": "index.ts",
+  "bin": {
+    "sqlite-95": "./bin/cli.ts"
+  },
   "files": [
     "admin-router/",
     "admin-webapp/public/",
     "controller/",
     "libs/",
     "orm/",
+    "bin/",
     "./index.ts"
   ],
   "license": "MIT",

@@ -28,7 +28,7 @@ export async function callController(
   const controllerModule = await import(filePath);
 
   if (typeof controllerModule.default !== 'function') {
-    console.log(`⚠️ Invalid controller module!`);
+    console.log(`⚠️  Invalid controller module!`);
     return new Response('Controller function must be default export.', {
       status: 500,
     });

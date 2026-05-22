@@ -12,5 +12,5 @@ export type { HandleRequestOptions };
 export type { Middleware };
 // End of fix.
 
-export { initDatabase, Table } from './orm';
+export { initDatabase, Table, checkSchema } from './orm';
 export { handleRequest, initialize } from './controller';

@@ -6,6 +6,8 @@ export type HandleRequestOptions = {
   prefix?: string;
   database?: {
     file: string;
+    check?: string;
+    ignore?: RegExp;
   };
   admin?: {
     prefix: string;

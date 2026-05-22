@@ -18,6 +18,6 @@ Bun.serve({
   },
 });
 
-initialize(SERVER_OPTIONS);
+await initialize(SERVER_OPTIONS);
 console.log(`  🔑  Admin password: ${password}`);
 console.log('');

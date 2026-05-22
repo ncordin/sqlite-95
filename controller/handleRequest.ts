@@ -96,7 +96,7 @@ export const handleRequest = async (
         options.controllers.middleware
       );
     } else {
-      console.log(`⚠️ Controller file missed! ${controllerFile}`);
+      console.log(`⚠️  Controller file missed! ${controllerFile}`);
     }
   }
 
