@@ -26,9 +26,9 @@ export const initialize = async (options: HandleRequestOptions) => {
   if (options.database) {
     const { version } = initDatabase({ file: options.database.file });
 
-    if (options.database.check) {
+    if (paths.tablesDirectory) {
       const result = await checkSchema({
-        tables: options.database.check,
+        tables: paths.tablesDirectory,
         ignore: options.database.ignore,
         verbose: false,
       });

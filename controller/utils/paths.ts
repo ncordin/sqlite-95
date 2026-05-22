@@ -9,6 +9,9 @@ export const resolvePaths = (options: HandleRequestOptions) => ({
   assetsPrefix: joinPrefix(options.prefix || '', options.assets?.prefix || ''),
 
   // Back directories :
+  tablesDirectory: options.database?.check
+    ? join(options.root, options.database.check)
+    : undefined,
   controllersDirectory: options.controllers
     ? join(options.root, options.controllers.path)
     : undefined,
