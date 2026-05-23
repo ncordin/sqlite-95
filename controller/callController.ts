@@ -132,6 +132,10 @@ export async function callController(
         `${name}=${value}; Max-Age=${maxAge}; Path=/`,
       ]);
     },
+    redirect: (url, statusCode = 302) => {
+      responseCode = statusCode;
+      customerHeaders.push(['Location', url]);
+    },
   };
 
   console.log(`🎯 ${request.method} ${requestPath}`);
@@ -155,6 +159,11 @@ export async function callController(
     );
 
     if (middlewareResponse) {
+      if (middlewareResponse instanceof Response) {
+        console.log(`🟠 ${responseCode} - Intercepted by middleware (raw Response)`);
+        return middlewareResponse;
+      }
+
       const response = new Response(JSON.stringify(middlewareResponse), {
         status: responseCode,
         headers: [...CORS_HEADERS, ['Content-Type', 'application/json']],
@@ -170,6 +179,22 @@ export async function callController(
     controller(controllerRequest, controllerResponse)
   ).then((value) => {
     console.log(`🟢 ${responseCode}`);
+
+    // If controller returns a raw Response, pass it through directly
+    if (value instanceof Response) {
+      return value;
+    }
+
+    // If a redirect was triggered, return an empty body
+    const hasLocation = customerHeaders.some(
+      ([name]) => name.toLowerCase() === 'location'
+    );
+    if (hasLocation) {
+      return new Response(null, {
+        status: responseCode,
+        headers: [...CORS_HEADERS, ...customerHeaders],
+      });
+    }
 
     switch (responseContentType) {
       case 'json':

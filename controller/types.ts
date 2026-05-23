@@ -95,6 +95,7 @@ export type ControllerResponse = {
   setStatusCode: (code: number) => void;
   setContentType: (type: ContentType) => void;
   setCustomHeader: (name: string, value: string) => void;
+  redirect: (url: string, statusCode?: 301 | 302 | 307 | 308) => void;
 };
 
 type JsonValue =
@@ -110,7 +111,7 @@ type JsonValue =
 export type Controller = (
   request: ControllerRequest,
   response: ControllerResponse
-) => JsonValue | Promise<JsonValue | BunFile>;
+) => JsonValue | BunFile | Response | Promise<JsonValue | BunFile | Response>;
 
 export type Middleware = (
   request: ControllerRequest,
