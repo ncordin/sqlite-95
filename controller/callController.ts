@@ -13,8 +13,8 @@ function parseCookie(cookie: string) {
   return cookie
     .split(';')
     .map((part) => part.trim())
-    .reduce((acc, current) => {
-      const [name, value] = current.split('=').map((v) => v.trim());
+    .reduce<Record<string, string>>((acc, current) => {
+      const [name = '', value = ''] = current.split('=').map((v) => v.trim());
       return { ...acc, [name]: value };
     }, {});
 }

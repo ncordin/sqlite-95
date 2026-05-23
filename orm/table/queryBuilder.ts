@@ -138,8 +138,8 @@ function makeField(name: string, field: AnyField) {
 }
 
 function makeFields(fields: Fields) {
-  return Object.keys(fields)
-    .map((name) => makeField(name, fields[name]))
+  return Object.entries(fields)
+    .map(([name, field]) => makeField(name, field))
     .join(', ');
 }
 

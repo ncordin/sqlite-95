@@ -85,11 +85,12 @@ export type TableInstance<TableType> = {
 };
 
 const inlineParameters = (sql: string, parameters: string[]): string => {
-  const parts = sql.split('?');
-  return parameters.reduce(
-    (acc, param, index) => acc + `'${param}'` + parts[index + 1],
-    parts[0]
-  );
+  let index = 0;
+  return sql.replace(/\?/g, () => {
+    const param = parameters[index];
+    index += 1;
+    return `'${param}'`;
+  });
 };
 
 type BuilderState = {
@@ -273,7 +274,8 @@ function createBuilder<TableType>(
       }, unique, indexes);
       const rows = limited.findAll();
 
-      return rows.length ? rows[0] : null;
+      const row = rows[0];
+      return row === undefined ? null : row;
     },
 
     /**
@@ -338,7 +340,11 @@ function createBuilder<TableType>(
 
       const rows = queryGet({ sql, parameters, name, fields, options, unique, indexes });
 
-      return parseInt(String(rows[0]['COUNT(*)']), 10);
+      const row = rows[0];
+      if (row === undefined) {
+        return 0;
+      }
+      return parseInt(String(row['COUNT(*)']), 10);
     },
 
     /**

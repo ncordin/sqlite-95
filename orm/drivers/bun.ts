@@ -25,11 +25,16 @@ type QueryOptions = {
 export const initDatabase = function (config: DatabaseConfiguration) {
   database = new Database(config.file);
 
-  const [{ version }] = database
+  const rows = database
     .query<{ version: string }, null>('SELECT sqlite_version() AS version;')
     .all(null);
 
-  return { version };
+  const firstRow = rows[0];
+  if (firstRow === undefined) {
+    throw new Error('Failed to retrieve SQLite version.');
+  }
+
+  return { version: firstRow.version };
 };
 
 export const queryGet = ({

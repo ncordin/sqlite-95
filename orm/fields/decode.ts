@@ -28,7 +28,7 @@ function decode(value: unknown, field: AnyField) {
 }
 
 function decodeRaw<TableType>(raw: RawRow, fields: Fields, tableName: string) {
-  return Object.keys(fields).reduce((previous, key) => {
+  return Object.entries(fields).reduce((previous, [key, field]) => {
     if (!(key in raw)) {
       throw new Error(
         `Decode failed: column "${key}" is declared in the schema for table ` +
@@ -37,7 +37,7 @@ function decodeRaw<TableType>(raw: RawRow, fields: Fields, tableName: string) {
           `declaration file).`
       );
     }
-    return { ...previous, [key]: decode(raw[key], fields[key]) };
+    return { ...previous, [key]: decode(raw[key], field) };
   }, {}) as TableType;
 }
 
