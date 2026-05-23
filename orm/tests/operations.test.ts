@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, test } from 'bun:test';
 
 import { Table, initDatabase } from '..';
-import { InferFromFields } from '../..';
+import type { InferFromFields } from '../..';
 
 const fields = {
   id: Table.number({ primaryKey: true, autoIncrement: true }),
@@ -117,7 +117,7 @@ describe('Select', () => {
     expect(Players.orderBy('name', 'ASC').limit(1, 1).toSQL()).toBe(
       'SELECT * FROM `players_ops` WHERE 1 = 1 ORDER BY `name` ASC LIMIT 1 OFFSET 1;'
     );
-    expect(Players.orderBy('name', 'ASC').limit(1, 1).findAll()[0].name).toBe(
+    expect(Players.orderBy('name', 'ASC').limit(1, 1).findAll()[0]!.name).toBe(
       'Bob'
     );
   });
@@ -306,7 +306,7 @@ describe('Raw SQL', () => {
       'SELECT COUNT(*) as c FROM players_ops',
       'read'
     );
-    expect(parseInt(String(rows[0].c), 10)).toBe(3);
+    expect(parseInt(String(rows[0]!.c), 10)).toBe(3);
   });
 
   test("rawQuery 'write' returns affectedRows", () => {
@@ -314,7 +314,7 @@ describe('Raw SQL', () => {
       "UPDATE players_ops SET gold = 0 WHERE name = 'Bob'",
       'write'
     );
-    expect(rows[0].affectedRows).toBe('1');
+    expect(rows[0]!.affectedRows).toBe('1');
     expect(Players.where('name', '=', 'Bob').findOne()?.gold).toBe(0);
   });
 });

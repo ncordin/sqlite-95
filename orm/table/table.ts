@@ -1,6 +1,6 @@
 import { queryRun, queryGet } from '../drivers';
 import { makeLimit, makeOrders, makeSet, makeWhere } from './queryBuilder';
-import {
+import type {
   ComparisonSymbol,
   Insertable,
   Limit,
@@ -13,7 +13,8 @@ import {
   Where,
   WriteResult,
 } from '../types';
-import { Fields, resolveField } from '../fields/declaration';
+import { resolveField } from '../fields/declaration';
+import type { Fields } from '../fields/declaration';
 import { encode, encodeName } from '../fields/encode';
 import { decodeRaws } from '../fields/decode';
 import { getError } from '../utils/error';

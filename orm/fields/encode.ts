@@ -1,5 +1,5 @@
-import { AnyField } from './declaration';
-import { Value } from '../types';
+import type { AnyField } from './declaration';
+import type { Value } from '../types';
 
 const quotify = (string: string, quote: string) => {
   return `${quote}${string}${quote}`; // Backslash should be done here.

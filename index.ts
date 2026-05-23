@@ -1,10 +1,10 @@
 // Fix for Bun 1.0.1
-import {
+import type {
   Controller,
   HandleRequestOptions,
   Middleware,
 } from './controller/types';
-import { InferFromFields } from './orm/fields/declaration';
+import type { InferFromFields } from './orm/fields/declaration';
 
 export type { Controller };
 export type { InferFromFields };

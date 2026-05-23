@@ -1,5 +1,5 @@
 import { join } from 'node:path';
-import { HandleRequestOptions } from '../types';
+import type { HandleRequestOptions } from '../types';
 import { joinPrefix } from './http';
 
 export const resolvePaths = (options: HandleRequestOptions) => ({

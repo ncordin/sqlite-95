@@ -1,5 +1,5 @@
 import Database from 'bun:sqlite';
-import { Controller } from '../../controller/types';
+import type { Controller } from '../../controller/types';
 import { getError } from '../../orm/utils/error';
 import { getDatabase } from '../utils';
 

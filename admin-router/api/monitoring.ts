@@ -1,5 +1,5 @@
 import os from 'os';
-import { Controller } from '../..';
+import type { Controller } from '../..';
 import {
   getRequestsPerHour,
   getRequestsPerSecond,
@@ -11,7 +11,7 @@ const controller: Controller = async () => {
 
   // Get process CPU usage (fast):
   const psOutput = await Bun.$`ps -o %cpu= -p ${pid}`.text();
-  const [cpu] = psOutput.trim().split(/\s+/);
+  const cpu = psOutput.trim().split(/\s+/)[0];
 
   // Get GLOBAL CPU usage (slow):
   const topOutput = isDarwin
@@ -23,12 +23,12 @@ const controller: Controller = async () => {
     : topOutput.match(/%Cpu.*?([\d.]+)\s*id/);
 
   const loadAvg = os.loadavg();
-  const totalCpu = idleMatch ? Math.round(100 - parseFloat(idleMatch[1])) : 0;
+  const totalCpu = idleMatch ? Math.round(100 - parseFloat(idleMatch[1] ?? '0')) : 0;
   const processMemory = Math.round(process.memoryUsage().rss / 1024 / 1024);
 
   return {
     loadAvg,
-    processCpu: parseFloat(cpu) || 0,
+    processCpu: parseFloat(cpu ?? '0') || 0,
     totalCpu,
     processMemory,
     requestsPerSecond: Math.max(1, getRequestsPerSecond()),

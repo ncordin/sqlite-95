@@ -1,7 +1,7 @@
-import { BunFile, Server } from 'bun';
+import type { BunFile, Server } from 'bun';
 import { CORS_HEADERS } from './cors';
 import { read } from './read';
-import {
+import type {
   ContentType,
   Controller,
   ControllerResponse,

@@ -1,5 +1,5 @@
 import Database from 'bun:sqlite';
-import { Controller } from '../../controller/types';
+import type { Controller } from '../../controller/types';
 import { getError } from '../../orm/utils/error';
 import { getDatabase } from '../utils';
 
@@ -92,7 +92,7 @@ const reorderFields = (
   }
 
   // Insérer le champ à la nouvelle position
-  newFields.splice(insertIndex, 0, fields[fieldToMoveIndex]);
+  newFields.splice(insertIndex, 0, fields[fieldToMoveIndex]!);
 
   return newFields;
 };

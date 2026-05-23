@@ -1,4 +1,4 @@
-import { BunFile, SocketAddress } from 'bun';
+import type { BunFile, SocketAddress } from 'bun';
 
 export type HandleRequestOptions = {
   root: string;

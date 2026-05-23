@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, describe, expect, test } from 'bun:test';
 
 import { Table, initDatabase } from '..';
-import { InferFromFields } from '../..';
+import type { InferFromFields } from '../..';
 
 const fields = {
   id: Table.number({ primaryKey: true, autoIncrement: true }),

@@ -1,6 +1,6 @@
 import Database from 'bun:sqlite';
 import os from 'os';
-import { Controller } from '../..';
+import type { Controller } from '../..';
 
 function formatUptime(seconds: number): string {
   const days = Math.floor(seconds / 86400);

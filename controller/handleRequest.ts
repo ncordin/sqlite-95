@@ -1,12 +1,12 @@
 import { dirname, join } from 'node:path';
 import { cwd } from 'node:process';
 import { callController } from './callController';
-import { HandleRequestOptions } from './types';
+import type { HandleRequestOptions } from './types';
 import { CORS_HEADERS } from './cors';
 import { make404, serveStaticFile, useIndex, displayPath } from './utils/http';
 import { recordRequest } from './monitoring';
 import { resolvePaths } from './utils/paths';
-import { Server } from 'bun';
+import type { Server } from 'bun';
 
 const ROOT_PATH = cwd();
 const IS_ADMIN = Bun.main.includes('admin-router/start.ts');

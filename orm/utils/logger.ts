@@ -1,4 +1,4 @@
-import { QueryOption } from '../types';
+import type { QueryOption } from '../types';
 
 const MAX_PARAM_LENGTH = 50;
 

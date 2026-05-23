@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 
 const args = Bun.argv.slice(2);
 
-if (args.length < 3 || args[0] !== 'check') {
+if (args[0] !== 'check' || !args[1] || !args[2]) {
   console.log('Usage: sqlite-95 check <database-file> <tables-directory>');
   process.exit(1);
 }

@@ -1,5 +1,5 @@
 import fileSystem from 'fs';
-import { Controller } from '../..';
+import type { Controller } from '../..';
 import { getError } from '../../orm/utils/error';
 
 const controller: Controller = async (request) => {

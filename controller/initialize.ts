@@ -1,5 +1,5 @@
 import { initDatabase, checkSchema } from '../orm';
-import { HandleRequestOptions } from './types';
+import type { HandleRequestOptions } from './types';
 import { getPackageVersion } from './utils/version';
 import { resolvePaths } from './utils/paths';
 

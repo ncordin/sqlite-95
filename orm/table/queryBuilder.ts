@@ -1,6 +1,7 @@
-import { AnyField, Fields, resolveField } from '../fields/declaration';
+import { resolveField } from '../fields/declaration';
+import type { AnyField, Fields } from '../fields/declaration';
 import { encode, encodeName } from '../fields/encode';
-import { ComparisonSymbol, Limit, OrderBy, Set, Value, Where } from '../types';
+import type { ComparisonSymbol, Limit, OrderBy, Set, Value, Where } from '../types';
 
 const OPERATORS: ComparisonSymbol[] = [
   '=',

@@ -1,8 +1,8 @@
 import { Database } from 'bun:sqlite';
 
-import { Fields } from '../fields/declaration';
+import type { Fields } from '../fields/declaration';
 import { makeCreateTable } from '../table/queryBuilder';
-import { DatabaseConfiguration, RawRow, WriteResult } from '../types';
+import type { DatabaseConfiguration, RawRow, WriteResult } from '../types';
 import type { QueryOption } from '../types';
 import { getError } from '../utils/error';
 import { logQuery } from '../utils/logger';
