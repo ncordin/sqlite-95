@@ -18,6 +18,7 @@
     "libs/",
     "orm/",
     "bin/",
+    "docs/",
     "./index.ts"
   ],
   "license": "MIT",

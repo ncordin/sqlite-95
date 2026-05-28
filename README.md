@@ -1,55 +1,73 @@
-# SQLite 95 / ORM
+# sqlite-95
 
-SQLite ORM with a web admin.
+A tiny, typed SQLite ORM for [Bun](https://bun.sh) — with a built-in web admin to browse and edit your tables.
 
-# TODOS
+- Fluent, immutable query builder
+- TypeScript types inferred from your schema
+- Minimal HTTP controller layer
+- Web admin out of the box
+- No runtime dependencies besides Bun
 
-- table logs / errors ?
-- SQL: group, having.
-- handle enum / bool / date in the admin form.
-- make server start command runnable from any directory.
-- write a complete Getting started guide https://khalilstemmler.com/blogs/typescript/node-starter-project/
-- set port / suffix / database name from the admin (editor of .env)
-- start the front server from the admin (with dev mode)
-- hide Bun error 500 page on production
-- add more Response types: redirection, image, etc...
-- /admin should redirect to /admin/ automatically
+## Install
 
-# Bugs
+```sh
+bun add sqlite-95
+```
 
-- if a table has a INTEGER primary key, it will be an alias of rowid and break the edit in admin
+Requires Bun ≥ 1.0. Not compatible with Node.
 
-# How to publish new version
+## Quick start
 
-- bun test
-- cd admin-webapp && bun install && bun run build
-- cd root of project
-- npm version patch|minor|major
-- npm publish --dry-run
-- npm publish
+```ts
+import { Table, initDatabase } from 'sqlite-95';
+import type { InferFromFields } from 'sqlite-95';
 
-# How to run on production
+initDatabase({ file: 'app.db' });
 
-- Create .env file `TEMPLATE`
-- Use Bun >= 1.0.0 (not compatible with Node)
-- pm2 start src/index.jsm
-- Add Nginx proxy for HTTPS
+const fields = {
+  id: Table.number({ primaryKey: true, autoIncrement: true }),
+  name: Table.string({ maxLength: 30 }),
+  gold: Table.number({ canBeNull: true }),
+  isCool: Table.boolean({ default: true }),
+};
 
-- Or, if really needed, use args:
-  PORT=3300 BASE_PATH=/sqlite-admin pm2 start --node-args "--es-module-specifier-resolution=node" server/index.js --name sqlite-admin
+type Player = InferFromFields<typeof fields>;
+const Players = Table.make<Player>({ name: 'players', fields });
 
-# Troubleshooting
+Players.insert({ name: 'Coco', gold: 50, isCool: true });
 
-`Cannot GET /admin/`, Can not access admin interface:
+const cool = Players.where('isCool', '=', true)
+  .where('gold', '>=', 10)
+  .orderBy('gold', 'DESC')
+  .findAll();
+```
 
-- Check for empty PREFIX, can cause bad URL like http://localhost//admin/
-- The node command MUST be run from the server project directory
-- Check node_module/sqlite-95/admin-webapp/public exists
+## Documentation
 
-# Etc...
+- [Queries](./docs/queries.md) — `findAll`, `findOne`, `insert`, `update`, `remove`, `count`, `rawSql`, immutability, `toSQL` introspection.
+- [Controllers](./docs/controllers.md) — JSON / HTML / text / file responses, redirects, cookies, headers, middleware.
 
-- works offline
-- does not handle bigint
-- write doc about dates UTC and server scripts
-- desktop ideas: see endpoints logs / visitors / web server / env variables
-- SELECT name, SUM("pgsize") FROM "dbstat" GROUP BY name;
+> Reading from `node_modules`? The same docs ship inside the package — `cat node_modules/sqlite-95/docs/queries.md` — or browse them on [GitHub](https://github.com/ncordin/sqlite-95/tree/main/docs).
+
+## Running in production
+
+1. Create a `.env` file based on the template.
+2. Start with pm2:
+
+   ```sh
+   pm2 start src/index.ts
+   ```
+
+3. Put Nginx in front for HTTPS.
+
+If you can't use a config file, pass values as env vars:
+
+```sh
+PORT=3300 BASE_PATH=/sqlite-admin pm2 \
+  start --node-args "--es-module-specifier-resolution=node" \
+  server/index.js --name sqlite-admin
+```
+
+## License
+
+MIT
