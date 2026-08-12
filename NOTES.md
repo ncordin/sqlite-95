@@ -19,8 +19,6 @@ Fichier de travail perso — pas publié sur npm, pas affiché sur la page GitHu
 
 ## Bugs
 
-- if a table has an INTEGER primary key, it will be an alias of rowid and break the edit in admin
-
 ## How to publish a new version
 
 ```

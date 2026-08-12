@@ -68,7 +68,7 @@ export function SearchTab() {
     ? `ORDER BY \`${orderBy}\` ${orderByDirection ? 'ASC' : 'DESC'}`
     : '';
 
-  const query = `SELECT rowid, * FROM \`${currentTable.name}\` ${whereClause} ${orderCommand} LIMIT 100;`;
+  const query = `SELECT rowid AS __rowid__, * FROM \`${currentTable.name}\` ${whereClause} ${orderCommand} LIMIT 100;`;
 
   // Réexécuter la recherche quand l'ordre change
   useEffect(() => {

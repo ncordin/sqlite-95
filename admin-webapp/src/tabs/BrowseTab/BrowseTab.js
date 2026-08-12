@@ -51,10 +51,10 @@ export function BrowseTab() {
       setSelected([]);
 
       const query = field
-        ? `SELECT rowid, * FROM \`${currentTable.name}\` ORDER BY \`${field}\` ${
+        ? `SELECT rowid AS __rowid__, * FROM \`${currentTable.name}\` ORDER BY \`${field}\` ${
             direction ? 'ASC' : 'DESC'
           } LIMIT 100;`
-        : `SELECT rowid, * FROM \`${currentTable.name}\` LIMIT 100;`;
+        : `SELECT rowid AS __rowid__, * FROM \`${currentTable.name}\` LIMIT 100;`;
       execute(query);
     }
   }, [currentTable, rowid]);
@@ -75,7 +75,7 @@ export function BrowseTab() {
       `browseOrderBy:${currentTable.name}`,
       JSON.stringify({ field, direction: newDirection })
     );
-    const query = `SELECT rowid, * FROM \`${currentTable.name}\` ORDER BY \`${field}\` ${
+    const query = `SELECT rowid AS __rowid__, * FROM \`${currentTable.name}\` ORDER BY \`${field}\` ${
       newDirection ? 'ASC' : 'DESC'
     } LIMIT 100;`;
     execute(query);

@@ -21,7 +21,7 @@ function makeAssignment(field, value) {
 
 export function makeSet(row) {
   return Object.keys(row)
-    .filter((key) => key !== 'rowid')
+    .filter((key) => key !== '__rowid__')
     .map((key) => makeAssignment(key, row[key]))
     .join(', ');
 }
@@ -41,7 +41,7 @@ export function makeFields(fields) {
 }
 
 export function makeDelete(table, row) {
-  return `DELETE FROM \`${table}\` WHERE rowid=${row.rowid};`;
+  return `DELETE FROM \`${table}\` WHERE rowid=${row.__rowid__};`;
 }
 
 export function makeCreateTable(table, fields) {

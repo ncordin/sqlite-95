@@ -68,7 +68,7 @@ export function BrowseResults({
 }) {
   const [modalContent, setModalContent] = useState(null);
   const headers = data[0] ? Object.keys(data[0]) : [];
-  const headersWithoutRowid = headers.filter((header) => header !== 'rowid');
+  const headersWithoutRowid = headers.filter((header) => header !== '__rowid__');
   const rows = Array.isArray(data) ? data : [];
 
   const changeSelection = (isSelected, index) => {
@@ -106,7 +106,7 @@ export function BrowseResults({
             <TableHeadCell></TableHeadCell>
             <TableHeadCell></TableHeadCell>
             {headers
-              .filter((header) => header !== 'rowid')
+              .filter((header) => header !== '__rowid__')
               .map((header) => (
                 <TableHeadCell
                   key={header}
@@ -121,7 +121,7 @@ export function BrowseResults({
         <TableBody>
           {rows.map((row, index) => {
             const values = Object.entries(row)
-              .filter(([key]) => key !== 'rowid')
+              .filter(([key]) => key !== '__rowid__')
               .map(([, value]) => value);
 
             return (
@@ -137,7 +137,7 @@ export function BrowseResults({
                 <TableDataCell style={{ width: 40 }}>
                   <Anchor
                     style={{ cursor: 'pointer' }}
-                    onClick={() => selectEditingRow(row.rowid)}
+                    onClick={() => selectEditingRow(row.__rowid__)}
                   >
                     edit
                   </Anchor>
