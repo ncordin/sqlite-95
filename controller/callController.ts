@@ -49,10 +49,20 @@ export async function callController(
 
   // Used for file upload:
   if (contentType.includes('multipart/form-data')) {
-    const formData = await request.formData();
-    formData.forEach((value, key) => {
-      body[key] = value as string | File;
-    });
+    try {
+      const formData = await request.formData();
+      formData.forEach((value, key) => {
+        body[key] = value as string | File;
+      });
+    } catch {
+      console.log(
+        `🟠 400 - Invalid multipart body on ${request.method} ${requestPath}`
+      );
+      return new Response(JSON.stringify({ error: 'Invalid multipart body' }), {
+        status: 400,
+        headers: [...CORS_HEADERS, ['Content-Type', 'application/json']],
+      });
+    }
   }
   // All other request use JSON:
   else {
