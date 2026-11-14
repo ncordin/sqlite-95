@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Anchor, Button, GroupBox, TextField } from 'react95';
 import styled from 'styled-components';
 import { FlexRow } from '../../components/FlexRow';

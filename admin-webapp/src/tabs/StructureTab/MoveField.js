@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Checkbox, GroupBox, Radio, Select } from 'react95';
 import { ContentModal } from '../../components/Modal';
 import { FlexRow } from '../../components/FlexRow';

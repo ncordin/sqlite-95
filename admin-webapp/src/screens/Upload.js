@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 import { Shortcut } from '../components/Shortcut';
 import { ContentModal } from '../components/Modal';

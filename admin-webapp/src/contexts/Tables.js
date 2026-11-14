@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useApi } from '../utils/useApi';
 import { useUrlParam } from '../utils/useUrlParam';
 
@@ -7,7 +7,7 @@ const initialState = {
   currentTable: null,
 };
 
-const ReactContext = React.createContext(initialState);
+const ReactContext = createContext(initialState);
 
 function TablesProvider({ children }) {
   const [tables, setTables] = useState([]);
@@ -48,7 +48,7 @@ function TablesProvider({ children }) {
 }
 
 function useTables() {
-  return React.useContext(ReactContext);
+  return useContext(ReactContext);
 }
 
 export { TablesProvider, useTables };

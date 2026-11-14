@@ -1,4 +1,3 @@
-import React from 'react';
 
 import { ModalProvider } from './contexts/Modal';
 import { HtmlLayout } from './components/HtmlLayout';

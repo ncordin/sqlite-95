@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Counter, ProgressBar, Separator } from 'react95';
 import { ContentModal } from '../components/Modal';

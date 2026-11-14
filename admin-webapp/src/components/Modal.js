@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button } from 'react95';
 import { ClosableWindow } from './ClosableWindow';
 import { useModal } from '../contexts/Modal';

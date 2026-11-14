@@ -1,4 +1,3 @@
-import React from 'react';
 import { Checkbox, Select, TextField } from 'react95';
 import styled from 'styled-components';
 

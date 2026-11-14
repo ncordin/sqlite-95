@@ -1,7 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 
-import { Button, Frame, Separator, TextField } from 'react95';
+import { Button, Frame, TextField } from 'react95';
 import { ClosableWindow } from '../components/ClosableWindow';
 import { Space } from '../components/Space';
 import { usePassword } from '../contexts/Password';

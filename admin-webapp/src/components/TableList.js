@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, ListItem, GroupBox } from 'react95';
 import { useTables } from '../contexts/Tables';
 import { BoldIf } from './BoldIf';

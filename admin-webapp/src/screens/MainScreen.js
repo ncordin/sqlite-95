@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Tab, TabBody, Tabs } from 'react95';
 import styled from 'styled-components';
 

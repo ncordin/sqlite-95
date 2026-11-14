@@ -1,7 +1,7 @@
-import React from 'react';
+import { createContext, useContext, useState } from 'react';
 import { useUrlParam } from '../utils/useUrlParam';
 
-const ReactContext = React.createContext({
+const ReactContext = createContext({
   database: null,
   setDatabase: null,
   databaseSize: null,
@@ -9,7 +9,7 @@ const ReactContext = React.createContext({
 
 function DatabaseProvider({ children }) {
   const [database, setDatabase] = useUrlParam('database');
-  const [databaseSize, setDatabaseSize] = React.useState(null);
+  const [databaseSize, setDatabaseSize] = useState(null);
 
   const selectDatabase = (name, size = null) => {
     setDatabase(name);
@@ -30,7 +30,7 @@ function DatabaseProvider({ children }) {
 }
 
 function useDatabase() {
-  return React.useContext(ReactContext);
+  return useContext(ReactContext);
 }
 
 export { DatabaseProvider, useDatabase };

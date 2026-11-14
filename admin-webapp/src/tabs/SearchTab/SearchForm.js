@@ -1,4 +1,3 @@
-import React from 'react';
 import { Select, TextField } from 'react95';
 import styled from 'styled-components';
 

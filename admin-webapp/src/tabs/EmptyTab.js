@@ -1,4 +1,3 @@
-import React from 'react';
 import { GroupBox } from 'react95';
 import { Centred } from '../components/Centred';
 

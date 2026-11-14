@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 import { fetchSqliteApi } from '../utils/useApi';
 
-const ReactContext = React.createContext({
+const ReactContext = createContext({
   password: null,
   isAuthenticated: false,
-  login: async (_) => null,
+  login: async () => null,
   logout: () => null,
 });
 
@@ -49,7 +49,7 @@ function PasswordProvider({ children }) {
 }
 
 function usePassword() {
-  return React.useContext(ReactContext);
+  return useContext(ReactContext);
 }
 
 export { PasswordProvider, usePassword };

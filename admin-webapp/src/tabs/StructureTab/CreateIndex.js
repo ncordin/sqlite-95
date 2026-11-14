@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Button, Checkbox, GroupBox, TextField } from 'react95';
+import { useEffect, useState } from 'react';
+import { Button, Checkbox, GroupBox } from 'react95';
 import styled from 'styled-components';
 import { FlexRow } from '../../components/FlexRow';
 import { useTables } from '../../contexts/Tables';

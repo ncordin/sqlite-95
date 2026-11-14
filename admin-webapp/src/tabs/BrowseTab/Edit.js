@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useTables } from '../../contexts/Tables';
 import { RowForm } from '../../components/RowForm';

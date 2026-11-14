@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Checkbox, GroupBox, Select, TextField } from 'react95';
 
 import { InnerPanel } from '../../components/InnerPanel';

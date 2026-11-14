@@ -10,6 +10,11 @@ const controller: Controller = async (req, res) => {
     });
 
     const fileName = files[0];
+
+    if (!fileName) {
+      return { error: 'No file' };
+    }
+
     const file = Bun.file(fileName);
 
     if ((await file.exists()) === false) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Counter, Hourglass, ProgressBar, Separator } from 'react95';
 
 import { Space } from '../../../components/Space';

@@ -1,5 +1,4 @@
 import { Panel } from 'react95';
-import React from 'react';
 
 export const InnerPanel = ({ children, style }) => (
   <Panel

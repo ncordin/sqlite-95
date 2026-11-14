@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from 'react95';
 import styled from 'styled-components';
 
@@ -44,7 +44,9 @@ export function BrowseTab() {
           const parsed = JSON.parse(stored);
           field = parsed.field;
           direction = parsed.direction;
-        } catch {}
+        } catch {
+          // ignore invalid stored sort
+        }
       }
       setOrderBy(field);
       setOrderByDirection(direction);

@@ -1,4 +1,3 @@
-import React from 'react';
 import styled, { createGlobalStyle, ThemeProvider } from 'styled-components';
 import { styleReset } from 'react95';
 import original from 'react95/dist/themes/original';

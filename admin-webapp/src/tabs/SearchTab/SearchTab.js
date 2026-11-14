@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, GroupBox } from 'react95';
 
 import { useTables } from '../../contexts/Tables';

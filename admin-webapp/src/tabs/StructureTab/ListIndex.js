@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, GroupBox } from 'react95';
 import { FlexRow } from '../../components/FlexRow';
 import { useApi } from '../../utils/useApi';

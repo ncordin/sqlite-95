@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, Window, WindowContent, WindowHeader } from 'react95';
 import styled from 'styled-components';
 
