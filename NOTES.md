@@ -21,7 +21,10 @@ Fichier de travail perso — pas publié sur npm, pas affiché sur la page GitHu
 
 ## How to publish a new version
 
+Pas de token npm : `npm login` (ouvre le navigateur, code OTP par mail), session de quelques heures.
+
 ```
+npm whoami
 bun test
 cd admin-webapp && bun install && bun run build
 cd ..
